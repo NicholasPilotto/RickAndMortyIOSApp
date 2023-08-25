@@ -89,6 +89,8 @@ identifier_name:
     - x
     - y
     - z
+  allowed_symbols:
+    - _
 
 indentation_width:
   indentation_width: 2
