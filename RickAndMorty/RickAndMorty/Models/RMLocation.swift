@@ -1,5 +1,5 @@
 //
-//  RMEpisode.swift
+//  Location.swift
 //  RickAndMorty
 //
 //  Created by Nicholas Pilotto on 25/08/23.
@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct RMEpisode: Codable {
+struct RMLocation: Codable {
   let id: Int
   let name: String
-  let air_ate: String
-  let episode: String
-  let characters:  [String]
+  let type: String
+  let dimension: String
+  let residents: String
   let url: String
   let created: String
 }
