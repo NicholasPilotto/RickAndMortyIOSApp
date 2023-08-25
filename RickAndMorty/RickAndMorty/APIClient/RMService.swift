@@ -14,7 +14,6 @@ final class RMService {
   
   private init() {}
   
-  
   /// Send Rick and Morty API call
   /// - Parameters:
   ///   - request: request instance
