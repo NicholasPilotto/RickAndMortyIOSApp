@@ -13,7 +13,7 @@ class CharacterListViewViewModel: NSObject {
     RMService.shared.execute(RMRequest.listCharactersRequests, expecting: RMGetAllCharactersResponse.self) { result in
       switch result {
         case .success(let model):
-          print(String(describing: model))
+          print(String(describing: model.results.first?.image ?? "no image"))
         case .failure(let failure):
           print(String(describing: failure))
       }
@@ -30,8 +30,18 @@ extension CharacterListViewViewModel:
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-    cell.backgroundColor = .systemRed
+    guard let cell = collectionView.dequeueReusableCell(
+      withReuseIdentifier: RMCharacterCollectionViewCell.cellIdentifier,
+      for: indexPath) as? RMCharacterCollectionViewCell else {
+      fatalError("Unsupported cell")
+    }
+    let viewModel = RMCharacterCollectionViewCellViewModel(
+      characterName: "Test",
+      characterStauts: .alive,
+      characterImageUrl: URL(string: "https://rickandmortyapi.com/api/character/avatar/1.jpeg")
+    )
+    cell.configure(with: viewModel)
+    
     return cell
   }
   
