@@ -15,7 +15,7 @@ final class RMCharacterCollectionViewCellViewModel {
   
   /// Represents the status of the current character
   public var characterStatusText: String {
-    return characterStauts.rawValue
+    return "Status: \(characterStauts.rawValue.capitalized)"
   }
   
   init(characterName: String, characterStauts: RMCharacterStatus, characterImageUrl: URL?) {
