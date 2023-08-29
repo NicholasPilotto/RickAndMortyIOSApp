@@ -15,6 +15,7 @@ final class RMCharacterCollectionViewCell: UICollectionViewCell {
     let imageView = UIImageView()
     imageView.contentMode = .scaleAspectFill
     imageView.translatesAutoresizingMaskIntoConstraints = false
+    imageView.clipsToBounds = true
     return imageView
   }()
   
@@ -38,7 +39,7 @@ final class RMCharacterCollectionViewCell: UICollectionViewCell {
     super.init(frame: frame)
     
     contentView.addSubviews(imageView, nameLabel, statusLabel)
-    contentView.clipsToBounds = true
+//    contentView.clipsToBounds = true
     
     addContraints()
     setUpLayer()
