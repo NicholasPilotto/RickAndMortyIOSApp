@@ -6,3 +6,16 @@
 //
 
 import Foundation
+
+final class RMCharacterDetailViewViewModel {
+  private let character: RMCharacter
+  
+  /// Computed property to get the title of the view
+  public var title: String {
+    character.name.uppercased()
+  }
+  
+  init(character: RMCharacter) {
+    self.character = character
+  }
+}
