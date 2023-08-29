@@ -9,8 +9,10 @@ import UIKit
 
 protocol RMCharacterListViewModelDelegate: AnyObject {
   func didLoadInitialCharacters()
+  func didSelectCharacter(_ character: RMCharacter)
 }
 
+/// View model to manage character list business logic
 final class RMCharacterListViewViewModel: NSObject {
   public weak var delegate: RMCharacterListViewModelDelegate?
   
@@ -26,8 +28,15 @@ final class RMCharacterListViewViewModel: NSObject {
     }
   }
   
+  private var apiInfo: RMGetAllCharactersResponse.Info?
+  
   private var cellViewModel: [RMCharacterCollectionViewCellViewModel] = []
-  /// Requesting the list of characters
+  
+  public var shouldShowLoadMoreIndicator: Bool {
+    return apiInfo?.next != nil
+  }
+  
+  /// Fetch initials set of characters (20)
   public func fetchCharacters() {
     RMService.shared.execute(
       .listCharactersRequests,
@@ -35,6 +44,7 @@ final class RMCharacterListViewViewModel: NSObject {
       switch result {
         case .success(let responseModel):
           let results = responseModel.results
+          self?.apiInfo = responseModel.info
           self?.characters = results
           DispatchQueue.main.async {
             self?.delegate?.didLoadInitialCharacters()
@@ -44,8 +54,13 @@ final class RMCharacterListViewViewModel: NSObject {
       }
     }
   }
+  
+  /// Paginate if additional characters are needed
+  public func fetchAdditionalCharacters() {
+  }
 }
 
+// MARK: Collection view
 extension RMCharacterListViewViewModel:
   UICollectionViewDataSource,
   UICollectionViewDelegate,
@@ -70,5 +85,20 @@ extension RMCharacterListViewViewModel:
     let bounds = UIScreen.main.bounds
     let width: CGFloat = (bounds.width - 30) / 2
     return CGSize(width: width, height: width * 1.5)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+    collectionView.deselectItem(at: indexPath, animated: true)
+    let character = characters[indexPath.row]
+    delegate?.didSelectCharacter(character)
+  }
+}
+
+// MARK: Scroll view
+extension RMCharacterListViewViewModel: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    guard shouldShowLoadMoreIndicator else {
+      return
+    }  
   }
 }
