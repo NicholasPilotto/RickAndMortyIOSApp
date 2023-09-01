@@ -25,7 +25,7 @@ final class RMCharacterListViewViewModel: NSObject {
           characterStauts: character.status,
           characterImageUrl: URL(string: character.image))
   
-        if cellViewModels.contains(viewModel) {
+        if !cellViewModels.contains(viewModel) {
           cellViewModels.append(viewModel)
         }
       }
