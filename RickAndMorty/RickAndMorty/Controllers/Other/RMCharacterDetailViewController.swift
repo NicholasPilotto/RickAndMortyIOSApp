@@ -11,10 +11,12 @@ import UIKit
 final class RMCharacterDetailViewController: UIViewController {
   private let viewModel: RMCharacterDetailViewViewModel
   
-  private let detailView = RMCharacterDetailView()
+  private let detailView: RMCharacterDetailView
   
   init(viewModel: RMCharacterDetailViewViewModel) {
     self.viewModel = viewModel
+    self.detailView = RMCharacterDetailView(frame: .zero, viewModel: viewModel)
+    
     super.init(nibName: nil, bundle: nil)
   }
   
@@ -32,6 +34,9 @@ final class RMCharacterDetailViewController: UIViewController {
       target: self,
       action: #selector(didTapShared))
     addConstraints()
+    
+    detailView.collectionView?.delegate = self
+    detailView.collectionView?.dataSource = self
   }
   
   private func addConstraints() {
@@ -44,4 +49,18 @@ final class RMCharacterDetailViewController: UIViewController {
   }
   
   @objc private func didTapShared() {}
+}
+
+// MARK: UICollectionView
+
+extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectionViewDataSource {
+  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    return viewModel.sections.count
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+    cell.backgroundColor = .systemPink
+    return cell
+  }
 }
