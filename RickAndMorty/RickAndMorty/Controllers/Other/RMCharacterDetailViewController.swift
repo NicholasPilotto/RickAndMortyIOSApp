@@ -59,22 +59,52 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
   }
   
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    switch section {
-      case 0:
+    let sectionType = viewModel.sections[section]
+    
+    switch sectionType {
+      case .photo:
         return 1
-      case 1:
-        return 8
-      case 2:
-        return 20
-        
-      default:
-        return 1
+      case .information(let viewModels):
+        return viewModels.count
+      case .episodes(let viewModels):
+        return viewModels.count
     }
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
-    cell.backgroundColor = .systemPink
-    return cell
+    let sectionType = viewModel.sections[indexPath.section]
+    
+    switch sectionType {
+      case .photo(let viewModel):
+        guard let cell = collectionView.dequeueReusableCell(
+          withReuseIdentifier: RMCharacterPhotoCollectionViewCell.identifier,
+          for: indexPath) as? RMCharacterPhotoCollectionViewCell else {
+          fatalError("Unsupported CollectioViewCell")
+        }
+
+        cell.configure(with: viewModel)
+        cell.backgroundColor = .systemPink
+        return cell
+      case .information(let viewModels):
+        guard let cell = collectionView.dequeueReusableCell(
+          withReuseIdentifier: RMCharacterInfoCollectionViewCell.identifier,
+          for: indexPath) as? RMCharacterInfoCollectionViewCell else {
+          fatalError("Unsupported CollectioViewCell")
+        }
+
+        cell.configure(with: viewModels[indexPath.row])
+        cell.backgroundColor = .systemGreen
+        return cell
+      case .episodes(let viewModels):
+        guard let cell = collectionView.dequeueReusableCell(
+          withReuseIdentifier: RMCharacterEpisodeCollectionViewCell.identifier,
+          for: indexPath) as? RMCharacterEpisodeCollectionViewCell else {
+          fatalError("Unsupported CollectioViewCell")
+        }
+
+        cell.configure(with: viewModels[indexPath.row])
+        cell.backgroundColor = .systemYellow
+        return cell
+    }
   }
 }
