@@ -10,6 +10,15 @@ import Foundation
 final class RMCharacterDetailViewViewModel {
   private let character: RMCharacter
   
+  enum SectionType: CaseIterable {
+    case photo
+    case information
+    case episodes
+  }
+  
+  /// Type of the section
+  public let sections = SectionType.allCases
+  
   /// Computed property to get the title of the view
   public var title: String {
     character.name.uppercased()
