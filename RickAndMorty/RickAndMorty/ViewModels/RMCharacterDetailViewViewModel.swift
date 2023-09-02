@@ -10,14 +10,14 @@ import UIKit
 final class RMCharacterDetailViewViewModel {
   private let character: RMCharacter
   
-  enum SectionType: CaseIterable {
-    case photo
-    case information
-    case episodes
+  enum SectionType {
+    case photo(viewModel: RMCharacterPhotoCellViewModel)
+    case information(viewModels: [RMCharacterInfoCellViewModel])
+    case episodes(viewModels: [RMCharacterEpisodeCellViewModel])
   }
   
   /// Type of the section
-  public let sections = SectionType.allCases
+  public var sections: [SectionType] = []
   
   /// Computed property to get the title of the view
   public var title: String {
@@ -26,10 +26,28 @@ final class RMCharacterDetailViewViewModel {
   
   init(character: RMCharacter) {
     self.character = character
+    setUpSections()
+  }
+  
+  private func setUpSections() {
+    sections = [
+      .photo(viewModel: .init()),
+      .information(viewModels: [
+        .init(),
+        .init(),
+        .init(),
+        .init()
+      ]),
+      .episodes(viewModels: [
+        .init(),
+        .init(),
+        .init(),
+        .init()
+      ])
+    ]
   }
   
   // MARK: layout
-  
   
   /// Create collection view layout section for character photo cell
   /// - Returns: NSCollectionLayoutSection for character photo
