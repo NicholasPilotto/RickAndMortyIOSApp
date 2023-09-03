@@ -7,8 +7,14 @@
 
 import UIKit
 
+/// Episode detail view controller class
 final class RMCharacterDetailViewViewModel {
   private let character: RMCharacter
+  
+  /// Represents all episode urls where this character is present
+  public var episodes: [String] {
+    self.character.episode
+  }
   
   enum SectionType {
     case photo(viewModel: RMCharacterPhotoCellViewModel)
