@@ -25,7 +25,11 @@ final class RMCharacterViewController: UIViewController, RMCharacterListViewDele
     )
   }
   
-  @objc private func didTapSearch() { }
+  @objc private func didTapSearch() {
+    let searchVC = RMSearchViewController(config: .init(type: .character))
+    searchVC.navigationItem.largeTitleDisplayMode = .never
+    navigationController?.pushViewController(searchVC, animated: true)
+  }
   
   private func setUpView() {
     characterListView.delegate = self
