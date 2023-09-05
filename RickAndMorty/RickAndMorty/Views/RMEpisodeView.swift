@@ -9,7 +9,7 @@ import UIKit
 
 final class RMEpisodeView: UIView {
   override init(frame: CGRect) {
-    super.frame
+    super.init(frame: frame)
   }
   
   required init?(coder: NSCoder) {
