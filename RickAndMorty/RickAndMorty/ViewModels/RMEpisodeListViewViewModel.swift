@@ -17,10 +17,24 @@ protocol RMEpisodeListViewModelDelegate: AnyObject {
 final class RMEpisodeListViewViewModel: NSObject {
   public weak var delegate: RMEpisodeListViewModelDelegate?
   
+  private let borderColor: [UIColor] = [
+    .systemGreen,
+    .systemBlue,
+    .systemOrange,
+    .systemPink,
+    .systemPurple,
+    .systemRed,
+    .systemYellow,
+    .systemMint,
+    .systemIndigo
+  ]
+  
   private var episodes: [RMEpisode] = [] {
     didSet {
       for episode in episodes {
-        let viewModel = RMCharacterEpisodeCellViewModel(episodeDataUrl: URL(string: episode.url))
+        let viewModel = RMCharacterEpisodeCellViewModel(
+          episodeDataUrl: URL(string: episode.url), borderColor: borderColor.randomElement() ?? .systemBlue
+        )
 
         if !cellViewModels.contains(viewModel) {
           cellViewModels.append(viewModel)
@@ -121,9 +135,9 @@ extension RMEpisodeListViewViewModel:
   }
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-    let bounds = UIScreen.main.bounds
-    let width: CGFloat = (bounds.width - 30) / 2
-    return CGSize(width: width, height: width * 0.8)
+    let bounds = collectionView.bounds
+    let width: CGFloat = (bounds.width - 20)
+    return CGSize(width: width, height: 100)
   }
   
   func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
