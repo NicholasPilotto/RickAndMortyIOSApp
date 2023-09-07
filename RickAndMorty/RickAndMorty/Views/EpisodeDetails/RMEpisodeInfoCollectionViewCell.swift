@@ -7,6 +7,5 @@
 
 import UIKit
 
-class RMEpisodeInfoCollectionViewCell: UICollectionViewCell {
-    
-}
+/// Episode collection view cell view
+final class RMEpisodeInfoCollectionViewCell: UICollectionViewCell { }
