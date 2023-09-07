@@ -30,6 +30,10 @@ final class RMEpisodeDetailViewViewModel {
     case characters(viewModel: [RMCharacterCollectionViewCellViewModel])
   }
   
+  
+  /// episode collection view cell view type
+  public private(set) var sections: [SectionType] = []
+  
   init(endpointUrl: URL?) {
     self.endpointUrl = endpointUrl
     
