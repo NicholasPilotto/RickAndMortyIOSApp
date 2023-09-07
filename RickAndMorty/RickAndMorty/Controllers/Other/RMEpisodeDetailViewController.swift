@@ -7,7 +7,8 @@
 
 import UIKit
 
-final class RMEpisodeDetailViewController: UIViewController {
+/// View controller to show details about single episode
+final class RMEpisodeDetailViewController: UIViewController, RMEpisodeDetailViewViewModelDelegate {
   private let viewModel: RMEpisodeDetailViewViewModel
   
   private let episodeDetailView = RMEpisodeDetailView()
@@ -33,6 +34,9 @@ final class RMEpisodeDetailViewController: UIViewController {
     
     view.addSubviews(episodeDetailView)
     
+    viewModel.delegate = self
+    viewModel.fetchEpisodeData()
+    
     addConstraints()
   }
   
@@ -46,5 +50,11 @@ final class RMEpisodeDetailViewController: UIViewController {
   }
       
   @objc private func didTapShare() {
+  }
+  
+  // MARK: RMEpisodeListViewModelDelegate implementation
+  
+  func didFetchEpisodeDetails() {
+    episodeDetailView.configure(with: viewModel)
   }
 }
