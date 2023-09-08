@@ -21,7 +21,7 @@ final class RMCharacterCollectionViewCell: UICollectionViewCell {
   
   private let nameLabel: UILabel = {
     let label = UILabel()
-    label.textColor = .secondaryLabel
+    label.textColor = .label
     label.font = .systemFont(ofSize: 18, weight: .medium)
     label.translatesAutoresizingMaskIntoConstraints = false
     return label
@@ -37,9 +37,7 @@ final class RMCharacterCollectionViewCell: UICollectionViewCell {
   
   override init(frame: CGRect) {
     super.init(frame: frame)
-    
     contentView.addSubviews(imageView, nameLabel, statusLabel)
-//    contentView.clipsToBounds = true
     
     addContraints()
     setUpLayer()
