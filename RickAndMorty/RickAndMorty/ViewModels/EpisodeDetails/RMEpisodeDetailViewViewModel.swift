@@ -87,12 +87,17 @@ final class RMEpisodeDetailViewViewModel {
     let episode = dataTuple.episode
     let characters = dataTuple.characters
     
+    var createdString = ""
+    if let date = RMCharacterInfoCellViewModel.dateFormatter.date(from: episode.created) {
+      createdString = RMCharacterInfoCellViewModel.shortDateFormatter.string(from: date)
+    }
+    
     cellViewModels = [
       .information(viewModels: [
         .init(title: "Episode name", value: episode.name),
         .init(title: "Air date", value: episode.air_date),
         .init(title: "Episode", value: episode.episode),
-        .init(title: "Created", value: episode.created)
+        .init(title: "Created", value: createdString)
       ]),
       .characters(viewModel: characters.compactMap {
         return RMCharacterCollectionViewCellViewModel(
@@ -118,5 +123,17 @@ final class RMEpisodeDetailViewViewModel {
           print(failure)
       }
     }
+  }
+  
+  /// Get the nth character inside the (RMEpisode, [RMCharacter]) tuple
+  /// if it exists or it is presents
+  /// - Parameter index: index of the character
+  /// - Returns: return the character if it is presents, nil otherwise
+  public func character(at index: Int) -> RMCharacter? {
+    guard let dataTuple = dataTuple else {
+      return nil
+    }
+    
+    return dataTuple.characters[index]
   }
 }
