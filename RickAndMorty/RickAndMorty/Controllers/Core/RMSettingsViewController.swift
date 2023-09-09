@@ -9,6 +9,12 @@ import UIKit
 
 /// Controller to show variuous app options and settings
 final class RMSettingsViewController: UIViewController {
+  private let viewModel = RMSettingsViewViewModel(cellViewModels:
+    RMSettingsOption.allCases.compactMap {
+      return RMSettingCellViewViewModel(type: $0)
+    }
+  )
+  
   override func viewDidLoad() {
     super.viewDidLoad()
     self.title = "Settings"
