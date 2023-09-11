@@ -6,6 +6,7 @@
 //
 
 import SafariServices
+import StoreKit
 import SwiftUI
 import UIKit
 
@@ -65,6 +66,12 @@ final class RMSettingsViewController: UIViewController {
     if let url = option.targetUrl {
       let viewController = SFSafariViewController(url: url)
       present(viewController, animated: true)
-    } else if option == .rateApp {}
+    } else if option == .rateApp {
+      Task { @MainActor [weak self] in
+        if let windowScene = self?.view.window?.windowScene {
+          SKStoreReviewController.requestReview(in: windowScene)
+        }
+      }
+    }
   }
 }
