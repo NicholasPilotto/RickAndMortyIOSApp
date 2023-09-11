@@ -30,8 +30,13 @@ struct RMSettingsView: View {
         }
         Text(viewModel.title)
           .padding(.leading, 10)
+        
+        Spacer()
       }
       .padding(.bottom, 3)
+      .onTapGesture {
+        viewModel.onTapHandler(viewModel.type)
+      }
     }
   }
 }
@@ -39,7 +44,7 @@ struct RMSettingsView: View {
 struct RMSettingsView_Previews: PreviewProvider {
   static var previews: some View {
     RMSettingsView(viewModel: .init(cellViewModels: RMSettingsOption.allCases.compactMap {
-      return .init(type: $0)
+      return .init(type: $0) { _ in }
     }))
   }
 }
