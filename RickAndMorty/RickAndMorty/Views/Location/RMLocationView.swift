@@ -25,7 +25,7 @@ class RMLocationView: UIView {
     table.alpha = 0
     table.isHidden = true
     table.translatesAutoresizingMaskIntoConstraints = false
-    table.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+    table.register(RMLocationTableViewCell.self, forCellReuseIdentifier: RMLocationTableViewCell.cellIdentifier)
     return table
   }()
   
@@ -45,6 +45,7 @@ class RMLocationView: UIView {
     spinner.startAnimating()
     
     addConstraints()
+    configureTable()
   }
   
   required init?(coder: NSCoder) {
@@ -65,5 +66,40 @@ class RMLocationView: UIView {
     ])
   }
   
-  public func configure(with viewModel: RMLocationViewModel) { }
+  public func configure(with viewModel: RMLocationViewModel) {
+    self.viewModel = viewModel
+  }
+  
+  private func configureTable() {
+    tableView.dataSource = self
+    tableView.delegate = self
+  }
+}
+
+extension RMLocationView: UITableViewDelegate {
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
+  }
+}
+
+extension RMLocationView: UITableViewDataSource {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return viewModel?.cellViewModels.count ?? 0
+  }
+  
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cellViewModels = viewModel?.cellViewModels else {
+      fatalError("CellViewModels is empty or null")
+    }
+    
+    guard let cell = tableView.dequeueReusableCell(
+      withIdentifier: RMLocationTableViewCell.cellIdentifier,
+      for: indexPath) as? RMLocationTableViewCell else {
+      fatalError("Cannot dequeue RMLocationTableViewCell")
+    }
+    var content = cell.defaultContentConfiguration()
+    content.secondaryText = cellViewModels[indexPath.row].name
+    cell.contentConfiguration = content
+    return cell
+  }
 }
