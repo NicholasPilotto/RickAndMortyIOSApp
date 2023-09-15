@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol RMLocationViewDelegate: AnyObject {
+  func rmLocationView(_ locationView: RMLocationView, didSelect location: RMLocation)
+}
+
 class RMLocationView: UIView {
   private var viewModel: RMLocationViewModel? {
     didSet {
@@ -21,7 +25,7 @@ class RMLocationView: UIView {
   }
   
   private let tableView: UITableView = {
-    let table = UITableView()
+    let table = UITableView(frame: .zero, style: .grouped)
     table.alpha = 0
     table.isHidden = true
     table.translatesAutoresizingMaskIntoConstraints = false
@@ -35,6 +39,8 @@ class RMLocationView: UIView {
     spinner.hidesWhenStopped = true
     return spinner
   }()
+  
+  public weak var delegate: RMLocationViewDelegate?
   
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -79,6 +85,12 @@ class RMLocationView: UIView {
 extension RMLocationView: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
+    
+    guard let locationModel = viewModel?.location(at: indexPath.row) else {
+      return
+    }
+    
+    delegate?.rmLocationView(self, didSelect: locationModel)
   }
 }
 
@@ -97,9 +109,7 @@ extension RMLocationView: UITableViewDataSource {
       for: indexPath) as? RMLocationTableViewCell else {
       fatalError("Cannot dequeue RMLocationTableViewCell")
     }
-    var content = cell.defaultContentConfiguration()
-    content.secondaryText = cellViewModels[indexPath.row].name
-    cell.contentConfiguration = content
+    cell.configure(with: cellViewModels[indexPath.row])
     return cell
   }
 }
