@@ -55,4 +55,16 @@ final class RMLocationViewModel {
       }
     }
   }
+  
+  
+  /// Get location at specific index
+  /// - Parameter index: index of the desired location
+  /// - Returns: Location if it exists in collection, `nil` otherwise
+  public func location(at index: Int) -> RMLocation? {
+    guard index >= locations.count else {
+      return nil
+    }
+    
+    return self.locations[index]
+  }
 }
