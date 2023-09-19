@@ -8,7 +8,8 @@
 import Foundation
 
 final class RMSearchViewViewModel {
-  private let config: RMSearchConfig
+  /// Search configuration property
+  public let config: RMSearchConfig
   
   init(config: RMSearchConfig) {
     self.config = config
