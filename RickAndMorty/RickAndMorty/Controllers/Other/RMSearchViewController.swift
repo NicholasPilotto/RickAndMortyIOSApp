@@ -54,6 +54,8 @@ class RMSearchViewController: UIViewController {
     title = viewModel.config.type.title
     view.backgroundColor = .systemBackground
     
+    searchView.delegate = self
+    
     view.addSubviews(searchView)
     
     addConstraints()
@@ -63,6 +65,11 @@ class RMSearchViewController: UIViewController {
       style: .done,
       target: self,
       action: #selector(didTapExecuteSearch))
+  }
+  
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    searchView.presentKeyboard()
   }
   
   private func addConstraints() {
@@ -75,4 +82,10 @@ class RMSearchViewController: UIViewController {
   }
   
   @objc private func didTapExecuteSearch() { }
+}
+
+extension RMSearchViewController: RMSearchViewDelegate {
+  func rmSearchView(_ searchView: RMSearchView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions) {
+    print(option)
+  }
 }
