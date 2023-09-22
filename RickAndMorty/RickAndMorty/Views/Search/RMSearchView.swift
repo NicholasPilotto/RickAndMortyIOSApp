@@ -7,11 +7,17 @@
 
 import UIKit
 
+protocol RMSearchViewDelegate: AnyObject {
+  func rmSearchView(_ searchView: RMSearchView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions)
+}
+
 class RMSearchView: UIView {
   private let viewModel: RMSearchViewViewModel
   
   private let searchInputView = RMSearchInputView()
   private let noResultsView = RMNoSearchResultsView()
+  
+  weak public var delegate: RMSearchViewDelegate?
   
   init(frame: CGRect, viewModel: RMSearchViewViewModel) {
     self.viewModel = viewModel
@@ -25,6 +31,7 @@ class RMSearchView: UIView {
     addConstraints()
     
     searchInputView.configure(with: .init(type: viewModel.config.type))
+    searchInputView.delegate = self
   }
   
   required init?(coder: NSCoder) {
@@ -36,7 +43,7 @@ class RMSearchView: UIView {
       searchInputView.topAnchor.constraint(equalTo: topAnchor),
       searchInputView.leftAnchor.constraint(equalTo: leftAnchor),
       searchInputView.rightAnchor.constraint(equalTo: rightAnchor),
-      searchInputView.heightAnchor.constraint(equalToConstant: 110),
+      searchInputView.heightAnchor.constraint(equalToConstant: viewModel.config.type == .episode ? 55 : 100),
       
       noResultsView.widthAnchor.constraint(equalToConstant: 150),
       noResultsView.heightAnchor.constraint(equalToConstant: 150),
@@ -44,13 +51,17 @@ class RMSearchView: UIView {
       noResultsView.centerYAnchor.constraint(equalTo: centerYAnchor)
     ])
   }
+  
+  public func presentKeyboard() {
+    searchInputView.presentKeyboard()
+  }
 }
 
 // MARK: CollectionView delegate and datasource methods
 
 extension RMSearchView: UICollectionViewDelegate, UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    return 1
+    return 0
   }
   
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -60,5 +71,13 @@ extension RMSearchView: UICollectionViewDelegate, UICollectionViewDataSource {
   
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     collectionView.deselectItem(at: indexPath, animated: true)
+  }
+}
+
+// MARK: RMSearchInputView delegate
+
+extension RMSearchView: RMSearchInputViewDelegate {
+  func rmSearchInputView(_ inputView: RMSearchInputView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions) {
+    delegate?.rmSearchView(self, didSelectOption: option)
   }
 }
