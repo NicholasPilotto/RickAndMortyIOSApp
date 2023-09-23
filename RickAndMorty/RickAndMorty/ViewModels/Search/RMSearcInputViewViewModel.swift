@@ -14,6 +14,17 @@ final class RMSearchInputViewViewModel {
     case status = "Status"
     case gender = "Gender"
     case locationType = "Location type"
+    
+    var choises: [String] {
+      switch self {
+        case .status:
+          return ["alive", "dead", "unknown"]
+        case .gender:
+          return ["male", "female", "genderless", "unknown"]
+        case .locationType:
+          return ["cluster", "planet", "microverse"]
+      }
+    }
   }
   
   /// Property to know if the current type has dynamic
