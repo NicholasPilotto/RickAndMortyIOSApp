@@ -30,6 +30,8 @@ final class RMSearchInputView: UIView {
     }
   }
   
+  private var stackView: UIStackView?
+  
   weak public var delegate: RMSearchInputViewDelegate?
   
   override init(frame: CGRect) {
@@ -44,6 +46,8 @@ final class RMSearchInputView: UIView {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  // MARK: - Private methods
   
   private func addConstraints() {
     NSLayoutConstraint.activate([
@@ -78,6 +82,7 @@ final class RMSearchInputView: UIView {
   
   private func createOptionStackView() -> UIStackView {
     let stackView = UIStackView()
+    self.stackView = stackView
     stackView.translatesAutoresizingMaskIntoConstraints = false
     stackView.axis = .horizontal
     stackView.distribution = .fillEqually
@@ -115,6 +120,8 @@ final class RMSearchInputView: UIView {
     return button
   }
   
+  // MARK: - Public methods
+  
   /// Configure view with view model
   /// - Parameter viewModel: view model that manages view
   public func configure(with viewModel: RMSearchInputViewViewModel) {
@@ -125,5 +132,26 @@ final class RMSearchInputView: UIView {
   /// Show keyboard
   public func presentKeyboard() {
     searchBar.becomeFirstResponder()
+  }
+  
+  /// Update option button title text and tint color
+  /// - Parameters:
+  ///   - option: Search dynamic option
+  ///   - value: New value for the button title
+  public func update(option: RMSearchInputViewViewModel.DynamicOptions, value: String) {
+    guard let buttons = stackView?.arrangedSubviews as? [UIButton],
+    let allOptions = viewModel?.options,
+    let index = allOptions.firstIndex(of: option) else {
+      return
+    }
+    
+    let button = buttons[index]
+    button.setAttributedTitle(
+      NSAttributedString(string: value.capitalized, attributes: [
+        .font: UIFont.systemFont(ofSize: 18, weight: .medium),
+        .foregroundColor: UIColor.link
+      ]),
+      for: .normal
+    )
   }
 }
