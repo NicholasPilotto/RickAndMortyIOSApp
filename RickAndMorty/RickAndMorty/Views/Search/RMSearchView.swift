@@ -32,11 +32,17 @@ class RMSearchView: UIView {
     
     searchInputView.configure(with: .init(type: viewModel.config.type))
     searchInputView.delegate = self
+    
+    viewModel.registerOptionChangeBlock { tuple in
+      self.searchInputView.update(option: tuple.0, value: tuple.1)
+    }
   }
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
+  
+  // MARK: - Private methods
   
   private func addConstraints() {
     NSLayoutConstraint.activate([
@@ -51,6 +57,8 @@ class RMSearchView: UIView {
       noResultsView.centerYAnchor.constraint(equalTo: centerYAnchor)
     ])
   }
+  
+  // MARK: - Public methods
   
   public func presentKeyboard() {
     searchInputView.presentKeyboard()
