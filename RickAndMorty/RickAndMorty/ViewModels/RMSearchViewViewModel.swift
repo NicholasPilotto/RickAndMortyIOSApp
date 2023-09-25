@@ -9,16 +9,22 @@ import Foundation
 
 final class RMSearchViewViewModel {
   private var optionMap: [RMSearchInputViewViewModel.DynamicOptions: String] = [:]
-  private var searchText: String = String()
+  private var searchText: String = ""
   
   private var registerOptionChangeBlock: (((RMSearchInputViewViewModel.DynamicOptions, String)) -> Void)?
+  
+  private var searchResultHandler: (() -> Void)?
   
   /// Search configuration property
   public let config: RMSearchConfig
   
+  // MARK: - Initializers
+  
   init(config: RMSearchConfig) {
     self.config = config
   }
+  
+  // MARK: - Private methods
   
   // MARK: - Public methods
   
@@ -46,6 +52,37 @@ final class RMSearchViewViewModel {
     self.searchText = text
   }
   
-  /// Search something
-  public func executeSearch() { }
+  /// Search characters, episodes, locations
+  public func executeSearch() {
+    var queryParams: [URLQueryItem] = [
+      URLQueryItem(name: "name", value: searchText)
+    ]
+    
+    // appending query params
+    queryParams.append(contentsOf: optionMap.enumerated().compactMap {
+      let argument = $0.element.key.queryArgument
+      let value = $0.element.value
+      return URLQueryItem(name: argument, value: value)
+    })
+
+    // creating request
+    let request = RMRequest(endpoint: config.type.endpoint, queryParameters: queryParams)
+    
+    // calling request
+    RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) { result in
+      switch result {
+        case .success(let model):
+          print(String(describing: model))
+        case .failure(let failure):
+          print(String(describing: failure))
+      }
+    }
+  }
+  
+  /// Register block. This block is called when the publisher gets the result from
+  /// the API call.
+  /// - Parameter block: Subscriber event handler block
+  public func registerSearchResultHandler(_ block: @escaping () -> Void) {
+    self.searchResultHandler = block
+  }
 }
