@@ -28,6 +28,17 @@ struct RMSearchConfig {
           return "Search Location"
       }
     }
+    
+    var endpoint: RMEndpoint {
+      switch self {
+        case .character:
+          return .character
+        case .episode:
+          return .episode
+        case .location:
+          return .location
+      }
+    }
   }
   
   let type: `Type`
@@ -81,7 +92,9 @@ class RMSearchViewController: UIViewController {
     ])
   }
   
-  @objc private func didTapExecuteSearch() { }
+  @objc private func didTapExecuteSearch() {
+    viewModel.executeSearch()
+  }
 }
 
 extension RMSearchViewController: RMSearchViewDelegate {
