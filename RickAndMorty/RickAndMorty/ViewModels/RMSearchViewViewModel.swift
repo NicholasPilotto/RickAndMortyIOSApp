@@ -55,7 +55,7 @@ final class RMSearchViewViewModel {
   /// Search characters, episodes, locations
   public func executeSearch() {
     var queryParams: [URLQueryItem] = [
-      URLQueryItem(name: "name", value: searchText)
+      URLQueryItem(name: "name", value: searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))
     ]
     
     // appending query params
@@ -67,7 +67,6 @@ final class RMSearchViewViewModel {
 
     // creating request
     let request = RMRequest(endpoint: config.type.endpoint, queryParameters: queryParams)
-    
     // calling request
     RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) { result in
       switch result {
