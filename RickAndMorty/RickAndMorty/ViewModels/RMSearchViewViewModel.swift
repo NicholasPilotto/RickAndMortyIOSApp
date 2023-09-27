@@ -13,7 +13,7 @@ final class RMSearchViewViewModel {
   
   private var registerOptionChangeBlock: (((RMSearchInputViewViewModel.DynamicOptions, String)) -> Void)?
   
-  private var searchResultHandler: (() -> Void)?
+  private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
   
   /// Search configuration property
   public let config: RMSearchConfig
@@ -25,6 +25,44 @@ final class RMSearchViewViewModel {
   }
   
   // MARK: - Private methods
+  
+  private func makeSearchApiCall<T: Codable>(_ type: T.Type, request: RMRequest) {
+    // calling request
+    RMService.shared.execute(request, expecting: type) { [weak self] result in
+      switch result {
+        case .success(let model):
+          self?.processSearcResults(model: model)
+        case .failure(let failure):
+          print(String(describing: failure))
+      }
+    }
+  }
+  
+  private func processSearcResults(model: Codable) {
+    var resultsVM: RMSearchResultViewModel?
+    
+    if let characterModels = model as? RMGetAllCharactersResponse {
+      resultsVM = .characters(characterModels.results.compactMap {
+        return RMCharacterCollectionViewCellViewModel(
+          characterName: $0.name,
+          characterStauts: $0.status,
+          characterImageUrl: URL(string: $0.image)
+        )
+      })
+    } else if let episodeModels = model as? RMGetAllEpisodesResponse {
+      resultsVM = .episodes(episodeModels.results.compactMap {
+        return RMCharacterEpisodeCellViewModel(episodeDataUrl: URL(string: $0.url))
+      })
+    } else if let locationModels = model as? RMGetAllLocationsResponse {
+      resultsVM = .locations(locationModels.results.compactMap {
+        return RMLocationTableViewCellViewModel(location: $0)
+      })
+    }
+    
+    if let results = resultsVM {
+      self.searchResultHandler?(results)
+    } else { }
+  }
   
   // MARK: - Public methods
   
@@ -67,21 +105,21 @@ final class RMSearchViewViewModel {
 
     // creating request
     let request = RMRequest(endpoint: config.type.endpoint, queryParameters: queryParams)
-    // calling request
-    RMService.shared.execute(request, expecting: RMGetAllCharactersResponse.self) { result in
-      switch result {
-        case .success(let model):
-          print(String(describing: model))
-        case .failure(let failure):
-          print(String(describing: failure))
-      }
+    
+    switch config.type.endpoint {
+      case .character:
+        makeSearchApiCall(RMGetAllCharactersResponse.self, request: request)
+      case .episode:
+        makeSearchApiCall(RMGetAllEpisodesResponse.self, request: request)
+      case .location:
+        makeSearchApiCall(RMGetAllLocationsResponse.self, request: request)
     }
   }
   
   /// Register block. This block is called when the publisher gets the result from
   /// the API call.
   /// - Parameter block: Subscriber event handler block
-  public func registerSearchResultHandler(_ block: @escaping () -> Void) {
+  public func registerSearchResultHandler(_ block: @escaping (RMSearchResultViewModel) -> Void) {
     self.searchResultHandler = block
   }
 }
