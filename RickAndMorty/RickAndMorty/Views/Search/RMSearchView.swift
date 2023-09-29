@@ -16,7 +16,8 @@ class RMSearchView: UIView {
   
   private let searchInputView = RMSearchInputView()
   private let noResultsView = RMNoSearchResultsView()
-  
+  private let resultsView = RMSearchResultsView()
+
   weak public var delegate: RMSearchViewDelegate?
   
   init(frame: CGRect, viewModel: RMSearchViewViewModel) {
@@ -26,20 +27,14 @@ class RMSearchView: UIView {
     backgroundColor = .systemBackground
     translatesAutoresizingMaskIntoConstraints = false
     
-    addSubviews(noResultsView, searchInputView)
-    
+    addSubviews(resultsView, noResultsView, searchInputView)
+
     addConstraints()
     
     searchInputView.configure(with: .init(type: viewModel.config.type))
     searchInputView.delegate = self
     
-    viewModel.registerOptionChangeBlock { tuple in
-      self.searchInputView.update(option: tuple.0, value: tuple.1)
-    }
-    
-    viewModel.registerSearchResultHandler { results in
-      print(results)
-    }
+    setUpHandlers(viewModel: viewModel)
   }
   
   required init?(coder: NSCoder) {
@@ -50,18 +45,46 @@ class RMSearchView: UIView {
   
   private func addConstraints() {
     NSLayoutConstraint.activate([
+      // input view
       searchInputView.topAnchor.constraint(equalTo: topAnchor),
       searchInputView.leftAnchor.constraint(equalTo: leftAnchor),
       searchInputView.rightAnchor.constraint(equalTo: rightAnchor),
       searchInputView.heightAnchor.constraint(equalToConstant: viewModel.config.type == .episode ? 55 : 100),
       
+      // results view
+      resultsView.topAnchor.constraint(equalTo: searchInputView.bottomAnchor),
+      resultsView.leftAnchor.constraint(equalTo: leftAnchor),
+      resultsView.rightAnchor.constraint(equalTo: rightAnchor),
+
+      // no results view
       noResultsView.widthAnchor.constraint(equalToConstant: 150),
       noResultsView.heightAnchor.constraint(equalToConstant: 150),
       noResultsView.centerXAnchor.constraint(equalTo: centerXAnchor),
       noResultsView.centerYAnchor.constraint(equalTo: centerYAnchor)
     ])
   }
-  
+
+  private func setUpHandlers(viewModel: RMSearchViewViewModel) {
+    viewModel.registerOptionChangeBlock { tuple in
+      self.searchInputView.update(option: tuple.0, value: tuple.1)
+    }
+
+    viewModel.registerSearchResultHandler { [weak self] results in
+      DispatchQueue.main.async {
+        self?.resultsView.configure(with: results)
+        self?.noResultsView.isHidden = true
+        self?.resultsView.isHidden = false
+      }
+    }
+
+    viewModel.registerNoSearchResultHandler { [weak self] in
+      DispatchQueue.main.async {
+        self?.noResultsView.isHidden = false
+        self?.resultsView.isHidden = true
+      }
+    }
+  }
+
   // MARK: - Public methods
   
   public func presentKeyboard() {
