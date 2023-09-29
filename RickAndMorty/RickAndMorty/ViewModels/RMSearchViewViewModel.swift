@@ -12,9 +12,10 @@ final class RMSearchViewViewModel {
   private var searchText: String = ""
   
   private var registerOptionChangeBlock: (((RMSearchInputViewViewModel.DynamicOptions, String)) -> Void)?
-  
+
   private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
-  
+  private var noSearchResultHandler: (() -> Void)?
+
   /// Search configuration property
   public let config: RMSearchConfig
   
@@ -32,8 +33,8 @@ final class RMSearchViewViewModel {
       switch result {
         case .success(let model):
           self?.processSearcResults(model: model)
-        case .failure(let failure):
-          print(String(describing: failure))
+        case .failure:
+          self?.handleNoResults()
       }
     }
   }
@@ -61,9 +62,15 @@ final class RMSearchViewViewModel {
     
     if let results = resultsVM {
       self.searchResultHandler?(results)
-    } else { }
+    } else {
+      self.handleNoResults()
+    }
   }
-  
+
+  private func handleNoResults() {
+    self.noSearchResultHandler?()
+  }
+
   // MARK: - Public methods
   
   /// Set value in option map
@@ -121,5 +128,13 @@ final class RMSearchViewViewModel {
   /// - Parameter block: Subscriber event handler block
   public func registerSearchResultHandler(_ block: @escaping (RMSearchResultViewModel) -> Void) {
     self.searchResultHandler = block
+  }
+  
+  /// Register block. This block is called when the publisher gets called from
+  /// the API call when there are no results. It can happen when we are searching
+  /// for something that does not exist or search went wrong.
+  /// - Parameter block: Subscriber event handler block.
+  public func registerNoSearchResultHandler(_ block: @escaping () -> Void) {
+    self.noSearchResultHandler = block
   }
 }
