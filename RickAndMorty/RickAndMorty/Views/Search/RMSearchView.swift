@@ -9,6 +9,8 @@ import UIKit
 
 protocol RMSearchViewDelegate: AnyObject {
   func rmSearchView(_ searchView: RMSearchView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions)
+
+  func rmSearchResultsView(_ resultsView: RMSearchView, didSelectLocation location: RMLocation)
 }
 
 class RMSearchView: UIView {
@@ -26,7 +28,9 @@ class RMSearchView: UIView {
     super.init(frame: frame)
     backgroundColor = .systemBackground
     translatesAutoresizingMaskIntoConstraints = false
-    
+
+    resultsView.delegate = self
+
     addSubviews(resultsView, noResultsView, searchInputView)
 
     addConstraints()
@@ -55,6 +59,7 @@ class RMSearchView: UIView {
       resultsView.topAnchor.constraint(equalTo: searchInputView.bottomAnchor),
       resultsView.leftAnchor.constraint(equalTo: leftAnchor),
       resultsView.rightAnchor.constraint(equalTo: rightAnchor),
+      resultsView.bottomAnchor.constraint(equalTo: bottomAnchor),
 
       // no results view
       noResultsView.widthAnchor.constraint(equalToConstant: 150),
@@ -69,9 +74,9 @@ class RMSearchView: UIView {
       self.searchInputView.update(option: tuple.0, value: tuple.1)
     }
 
-    viewModel.registerSearchResultHandler { [weak self] results in
+    viewModel.registerSearchResultHandler { [weak self] result in
       DispatchQueue.main.async {
-        self?.resultsView.configure(with: results)
+        self?.resultsView.configure(with: result)
         self?.noResultsView.isHidden = true
         self?.resultsView.isHidden = false
       }
@@ -109,7 +114,7 @@ extension RMSearchView: UICollectionViewDelegate, UICollectionViewDataSource {
   }
 }
 
-// MARK: RMSearchInputView delegate
+// MARK: - RMSearchInputView delegate
 
 extension RMSearchView: RMSearchInputViewDelegate {
   func rmSearchInputView(_ inputView: RMSearchInputView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions) {
@@ -122,5 +127,17 @@ extension RMSearchView: RMSearchInputViewDelegate {
   
   func rmSearchInputViewDidTapSearchKeyboardButton(_ inputView: RMSearchInputView) {
     viewModel.executeSearch()
+  }
+}
+
+// MARK: - RMSearchResultsView delegate
+
+extension RMSearchView: RMSearchResultsDelegate {
+  func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapLocationAt index: Int) {
+    guard let locationModel = viewModel.locationSearchResult(at: index) else {
+      return
+    }
+
+    delegate?.rmSearchResultsView(self, didSelectLocation: locationModel)
   }
 }
