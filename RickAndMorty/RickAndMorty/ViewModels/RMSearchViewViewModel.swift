@@ -16,6 +16,8 @@ final class RMSearchViewViewModel {
   private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
   private var noSearchResultHandler: (() -> Void)?
 
+  private var searchResultModel: Codable?
+
   /// Search configuration property
   public let config: RMSearchConfig
   
@@ -61,6 +63,7 @@ final class RMSearchViewViewModel {
     }
     
     if let results = resultsVM {
+      self.searchResultModel = model
       self.searchResultHandler?(results)
     } else {
       self.handleNoResults()
@@ -136,5 +139,16 @@ final class RMSearchViewViewModel {
   /// - Parameter block: Subscriber event handler block.
   public func registerNoSearchResultHandler(_ block: @escaping () -> Void) {
     self.noSearchResultHandler = block
+  }
+  
+  /// Get location at particular index if it exists, nil otherwise
+  /// - Parameter index: Index of the desired location
+  /// - Returns: Location found
+  public func locationSearchResult(at index: Int) -> RMLocation? {
+    guard let searchModel = searchResultModel as? RMGetAllLocationsResponse else {
+      return nil
+    }
+
+    return searchModel.results[index]
   }
 }
