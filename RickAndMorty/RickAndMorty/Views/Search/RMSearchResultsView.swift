@@ -7,6 +7,10 @@
 
 import UIKit
 
+protocol RMSearchResultsDelegate: AnyObject {
+  func rmSearchResultsView(_ resultsView: RMSearchResultsView, didTapLocationAt index: Int)
+}
+
 /// Shows search results UI
 final class RMSearchResultsView: UIView {
   private var viewModel: RMSearchResultViewModel? {
@@ -22,6 +26,12 @@ final class RMSearchResultsView: UIView {
     table.translatesAutoresizingMaskIntoConstraints = false
     return table
   }()
+
+  private var locationCellViewModels: [RMLocationTableViewCellViewModel] = []
+
+  public weak var delegate: RMSearchResultsDelegate?
+
+  // MARK: - Initializers
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -60,25 +70,50 @@ final class RMSearchResultsView: UIView {
         setUpCollectionView()
       case .episodes(let viewModels):
         print(viewModels)
-        setUpTableView()
-      case .locations(let viewModels):
-        print(viewModels)
         setUpCollectionView()
+      case .locations(let viewModels):
+        setUpTableView(viewModels: viewModels)
     }
   }
 
   private func setUpCollectionView() { }
 
-  private func setUpTableView() {
+  private func setUpTableView(viewModels: [RMLocationTableViewCellViewModel]) {
+    tableView.delegate = self
+    tableView.dataSource = self
     tableView.isHidden = false
+    self.locationCellViewModels = viewModels
+    tableView.reloadData()
   }
 
   // MARK: - Public methods
-
 
   /// Configure current view with its view model class.
   /// - Parameter viewModel: view model class used to configure view
   public func configure(with viewModel: RMSearchResultViewModel) {
     self.viewModel = viewModel
+  }
+}
+
+// MARK: - UITableView delegate and datasource methods
+
+extension RMSearchResultsView: UITableViewDataSource, UITableViewDelegate {
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return locationCellViewModels.count
+  }
+
+  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    guard let cell = tableView.dequeueReusableCell(
+      withIdentifier: RMLocationTableViewCell.cellIdentifier,
+      for: indexPath) as? RMLocationTableViewCell else {
+      fatalError("Failed to dequeue RMLocationTableViewCell")
+    }
+    cell.configure(with: locationCellViewModels[indexPath.row])
+    return cell
+  }
+
+  func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    tableView.deselectRow(at: indexPath, animated: true)
+    delegate?.rmSearchResultsView(self, didTapLocationAt: indexPath.row)
   }
 }
