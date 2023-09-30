@@ -110,4 +110,10 @@ extension RMSearchViewController: RMSearchViewDelegate {
     
     present(viewController, animated: true)
   }
+
+  func rmSearchResultsView(_ resultsView: RMSearchView, didSelectLocation location: RMLocation) {
+    let viewController = RMLocationDetailViewController(location: location)
+    viewController.navigationItem.largeTitleDisplayMode = .never
+    navigationController?.pushViewController(viewController, animated: true)
+  }
 }
