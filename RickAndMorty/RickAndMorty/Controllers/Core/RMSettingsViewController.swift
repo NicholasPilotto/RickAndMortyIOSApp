@@ -13,15 +13,15 @@ import UIKit
 /// Controller to show variuous app options and settings
 final class RMSettingsViewController: UIViewController {
   private var settingsSwiftUIController: UIHostingController<RMSettingsView>?
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     self.title = "Settings"
     view.backgroundColor = .systemBackground
-    
+
     addSwiftUIControllers()
   }
-  
+
   private func addSwiftUIControllers() {
     let settingsSwiftUIController = UIHostingController(rootView: RMSettingsView(
       viewModel: RMSettingsViewViewModel(
@@ -32,14 +32,14 @@ final class RMSettingsViewController: UIViewController {
         })
       )
     )
-    
+
     addChild(settingsSwiftUIController)
     settingsSwiftUIController.didMove(toParent: self)
-    
+
     view.addSubviews(settingsSwiftUIController.view)
-    
+
     settingsSwiftUIController.view.translatesAutoresizingMaskIntoConstraints = false
-    
+
     NSLayoutConstraint.activate([
       settingsSwiftUIController.view.topAnchor.constraint(
         equalTo: self.view.safeAreaLayoutGuide.topAnchor
@@ -54,15 +54,15 @@ final class RMSettingsViewController: UIViewController {
         equalTo: self.view.safeAreaLayoutGuide.bottomAnchor
       )
     ])
-    
+
     self.settingsSwiftUIController = settingsSwiftUIController
   }
-  
+
   private func handleTap(option: RMSettingsOption) {
     guard Thread.current.isMainThread else {
       return
     }
-    
+
     if let url = option.targetUrl {
       let viewController = SFSafariViewController(url: url)
       present(viewController, animated: true)

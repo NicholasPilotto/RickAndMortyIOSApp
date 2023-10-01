@@ -9,7 +9,7 @@ import UIKit
 
 class RMNoSearchResultsView: UIView {
   private let viewModel = RMNoSearchResultsViewViewModel()
-  
+
   private let iconView: UIImageView = {
     let image = UIImageView()
     image.contentMode = .scaleAspectFit
@@ -17,7 +17,7 @@ class RMNoSearchResultsView: UIView {
     image.translatesAutoresizingMaskIntoConstraints = false
     return image
   }()
-  
+
   private let label: UILabel = {
     let label = UILabel()
     label.textAlignment = .center
@@ -25,23 +25,23 @@ class RMNoSearchResultsView: UIView {
     label.translatesAutoresizingMaskIntoConstraints = false
     return label
   }()
-  
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     translatesAutoresizingMaskIntoConstraints = false
     isHidden = true
-    
+
     addSubviews(iconView, label)
-    
+
     addConstraints()
-    
+
     configure()
   }
-    
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   private func addConstraints() {
     NSLayoutConstraint.activate([
       iconView.widthAnchor.constraint(equalToConstant: 90),
@@ -55,7 +55,7 @@ class RMNoSearchResultsView: UIView {
       label.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 10)
     ])
   }
-  
+
   public func configure() {
     label.text = viewModel.title
     iconView.image = viewModel.image

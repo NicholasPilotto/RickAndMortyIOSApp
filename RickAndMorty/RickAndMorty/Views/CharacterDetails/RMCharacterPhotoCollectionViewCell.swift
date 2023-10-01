@@ -9,7 +9,7 @@ import UIKit
 
 final class RMCharacterPhotoCollectionViewCell: UICollectionViewCell {
   static let identifier = "RMCharacterPhotoCollectionViewCell"
-  
+
   private let imageView: UIImageView = {
     let imageView = UIImageView()
     imageView.contentMode = .scaleAspectFill
@@ -17,17 +17,17 @@ final class RMCharacterPhotoCollectionViewCell: UICollectionViewCell {
     imageView.clipsToBounds = true
     return imageView
   }()
-  
+
   override init(frame: CGRect) {
     super.init(frame: frame)
     contentView.addSubviews(imageView)
     setUpConstraints()
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   private func setUpConstraints() {
     NSLayoutConstraint.activate([
       imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -36,12 +36,12 @@ final class RMCharacterPhotoCollectionViewCell: UICollectionViewCell {
       imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
     ])
   }
-  
+
   override func prepareForReuse() {
     super.prepareForReuse()
     self.imageView.image = nil
   }
-  
+
   public func configure(with viewModel: RMCharacterPhotoCellViewModel) {
     viewModel.fetchImage { [weak self] result in
       switch result {

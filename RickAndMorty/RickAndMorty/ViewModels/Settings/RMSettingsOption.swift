@@ -15,7 +15,7 @@ enum RMSettingsOption: CaseIterable {
   case apiReference
   case viewSeries
   case viewCode
-  
+
   var displayedTitle: String {
     switch self {
       case .rateApp:
@@ -34,7 +34,7 @@ enum RMSettingsOption: CaseIterable {
         return "View App Code"
     }
   }
-  
+
   var iconImage: UIImage? {
     switch self {
       case .rateApp:
@@ -53,7 +53,7 @@ enum RMSettingsOption: CaseIterable {
         return UIImage(systemName: "hammer.fill")
     }
   }
-  
+
   var iconContainerColor: UIColor {
     switch self {
       case .rateApp:
@@ -72,7 +72,7 @@ enum RMSettingsOption: CaseIterable {
         return .systemPink
     }
   }
-  
+
   var targetUrl: URL? {
     switch self {
       case .rateApp:

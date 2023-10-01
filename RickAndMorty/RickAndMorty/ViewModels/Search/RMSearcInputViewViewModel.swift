@@ -9,12 +9,12 @@ import Foundation
 
 final class RMSearchInputViewViewModel {
   private let type: RMSearchConfig.`Type`
-  
+
   public enum DynamicOptions: String {
     case status = "Status"
     case gender = "Gender"
     case locationType = "Location type"
-    
+
     var queryArgument: String {
       switch self {
         case .status:
@@ -25,7 +25,7 @@ final class RMSearchInputViewViewModel {
           return "type"
       }
     }
-    
+
     var choises: [String] {
       switch self {
         case .status:
@@ -37,7 +37,7 @@ final class RMSearchInputViewViewModel {
       }
     }
   }
-  
+
   /// Property to know if the current type has dynamic
   /// options.
   public var hasDynamicOptions: Bool {
@@ -48,7 +48,7 @@ final class RMSearchInputViewViewModel {
         return false
     }
   }
-  
+
   /// Property to know what option current view needs to show.
   public var options: [DynamicOptions] {
     switch self.type {
@@ -60,7 +60,7 @@ final class RMSearchInputViewViewModel {
         return []
     }
   }
-  
+
   /// Property to know what is the placeholder text
   /// for the search bar.
   public var searchPlaceholderText: String {
@@ -73,7 +73,7 @@ final class RMSearchInputViewViewModel {
         return "Episode name"
     }
   }
-  
+
   init(type: RMSearchConfig.`Type`) {
     self.type = type
   }

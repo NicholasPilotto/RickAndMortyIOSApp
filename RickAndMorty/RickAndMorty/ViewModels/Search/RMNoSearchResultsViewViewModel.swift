@@ -10,7 +10,7 @@ import UIKit
 struct RMNoSearchResultsViewViewModel {
   /// Title of the view
   public let title = "No results"
-  
+
   /// View icon image
   public let image = UIImage(systemName: "magnifyingglass.circle")
 }

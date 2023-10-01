@@ -10,7 +10,7 @@ import Foundation
 struct RMEpisodeInfoCollectionViewCellViewModel {
   /// Info episode cell title
   public let title: String
-  
+
   /// Info episode cell value
   public let value: String
 }

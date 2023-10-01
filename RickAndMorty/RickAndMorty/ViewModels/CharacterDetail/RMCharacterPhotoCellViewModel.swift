@@ -9,11 +9,11 @@ import Foundation
 
 final class RMCharacterPhotoCellViewModel {
   private let imageUrl: URL?
-  
+
   init(imageUrl: URL?) {
     self.imageUrl = imageUrl
   }
-  
+
   /// Fetch character detail image
   /// - Parameter completion: Completion handler block
   public func fetchImage(completion: @escaping (Result<Data, Error>) -> Void) {
@@ -21,7 +21,7 @@ final class RMCharacterPhotoCellViewModel {
       completion(.failure(URLError(.badURL)))
       return
     }
-    
+
     RMImageLoader.shared.downloadImage(imageUrl, completion: completion)
   }
 }

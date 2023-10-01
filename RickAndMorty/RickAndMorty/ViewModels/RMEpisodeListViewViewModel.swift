@@ -16,7 +16,7 @@ protocol RMEpisodeListViewModelDelegate: AnyObject {
 /// View model to manage episode list business logic
 final class RMEpisodeListViewViewModel: NSObject {
   public weak var delegate: RMEpisodeListViewModelDelegate?
-  
+
   private let borderColor: [UIColor] = [
     .systemGreen,
     .systemBlue,
@@ -28,7 +28,7 @@ final class RMEpisodeListViewViewModel: NSObject {
     .systemMint,
     .systemIndigo
   ]
-  
+
   private var episodes: [RMEpisode] = [] {
     didSet {
       for episode in episodes {
@@ -42,17 +42,17 @@ final class RMEpisodeListViewViewModel: NSObject {
       }
     }
   }
-  
+
   private var apiInfo: RMGetAllEpisodesResponse.Info?
-  
+
   private var cellViewModels: [RMCharacterEpisodeCellViewModel] = []
-  
+
   public var shouldShowLoadMoreIndicator: Bool {
     return apiInfo?.next != nil
   }
-  
+
   private var isLoadingMoreEpisode = false
-  
+
   /// Fetch initials set of episodes (20)
   public func fetchEpisode() {
     RMService.shared.execute(
@@ -71,19 +71,19 @@ final class RMEpisodeListViewViewModel: NSObject {
       }
     }
   }
-  
+
   /// Paginate if additional episodes are needed
   public func fetchAdditionalEpisodes(url: URL) {
     guard !isLoadingMoreEpisode else {
       return
     }
-    
+
     isLoadingMoreEpisode = true
     guard let rmRequest = RMRequest(url: url) else {
       isLoadingMoreEpisode = false
       return
     }
-    
+
     RMService.shared.execute(
       rmRequest,
       expecting: RMGetAllEpisodesResponse.self) { [weak self] result in
@@ -91,7 +91,7 @@ final class RMEpisodeListViewViewModel: NSObject {
         case .success(let responseModel):
           let moreResults = responseModel.results
           self?.apiInfo = responseModel.info
-          
+
           let originalCount = self?.episodes.count ?? 0
           let newCount = moreResults.count
           let total = originalCount + newCount
@@ -99,7 +99,7 @@ final class RMEpisodeListViewViewModel: NSObject {
           let indexPathsToAdd: [IndexPath] = Array(startingIndex ..< (startingIndex + newCount)).compactMap {
             return IndexPath(row: $0, section: 0)
           }
-          
+
           self?.episodes.append(contentsOf: moreResults)
           DispatchQueue.main.async {
             self?.delegate?.didLoadMoreEpisodes(with: indexPathsToAdd)
@@ -121,30 +121,30 @@ extension RMEpisodeListViewViewModel:
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return self.cellViewModels.count
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     guard let cell = collectionView.dequeueReusableCell(
       withReuseIdentifier: RMCharacterEpisodeCollectionViewCell.identifier,
       for: indexPath) as? RMCharacterEpisodeCollectionViewCell else {
       fatalError("Unsupported cell")
     }
-    
+
     cell.configure(with: cellViewModels[indexPath.row])
-    
+
     return cell
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     let bounds = collectionView.bounds
     let width: CGFloat = (bounds.width - 20)
     return CGSize(width: width, height: 100)
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
     guard kind == UICollectionView.elementKindSectionFooter else {
       fatalError("Unsupported reusable view")
     }
-    
+
     guard let footer = collectionView.dequeueReusableSupplementaryView(
       ofKind: kind,
       withReuseIdentifier: RMFooterLoadingCollectionReusableView.identifier,
@@ -152,20 +152,20 @@ extension RMEpisodeListViewViewModel:
     ) as? RMFooterLoadingCollectionReusableView else {
       fatalError("Unsupported reusable view")
     }
-    
+
     footer.startAnimating()
-            
+
     return footer
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
     guard shouldShowLoadMoreIndicator else {
       return .zero
     }
-    
+
     return CGSize(width: collectionView.frame.width, height: 100)
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     collectionView.deselectItem(at: indexPath, animated: true)
     let character = episodes[indexPath.row]
@@ -183,16 +183,16 @@ extension RMEpisodeListViewViewModel: UIScrollViewDelegate {
       let url = URL(string: nextUrlString) else {
       return
     }
-    
+
     Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] timer in
       let offset = scrollView.contentOffset.y
       let totalContentHeight = scrollView.contentSize.height
       let totalScrollViewHeight = scrollView.frame.size.height
-      
+
       if offset >= (totalContentHeight - totalScrollViewHeight - 120) {
         self?.fetchAdditionalEpisodes(url: url)
       }
-      
+
       timer.invalidate()
     }
   }

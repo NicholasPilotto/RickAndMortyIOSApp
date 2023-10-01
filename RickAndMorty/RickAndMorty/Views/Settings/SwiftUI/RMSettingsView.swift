@@ -9,11 +9,11 @@ import SwiftUI
 
 struct RMSettingsView: View {
   let viewModel: RMSettingsViewViewModel
-  
+
   init(viewModel: RMSettingsViewViewModel) {
     self.viewModel = viewModel
   }
-  
+
   var body: some View {
     List(viewModel.cellViewModels) { viewModel in
       HStack {
@@ -30,7 +30,7 @@ struct RMSettingsView: View {
         }
         Text(viewModel.title)
           .padding(.leading, 10)
-        
+
         Spacer()
       }
       .padding(.bottom, 3)

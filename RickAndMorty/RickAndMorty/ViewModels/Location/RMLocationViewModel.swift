@@ -16,28 +16,28 @@ final class RMLocationViewModel {
     didSet {
       for location in locations {
         let cellViewModel = RMLocationTableViewCellViewModel(location: location)
-        
+
         if !cellViewModels.contains(cellViewModel) {
           cellViewModels.append(cellViewModel)
         }
       }
     }
 }
-  
+
   private var hasMoreResults: Bool {
     return false
   }
-  
+
   private var apiInfo: RMGetAllLocationsResponse.Info?
-  
+
   /// Array of cell view models
   public private(set) var cellViewModels: [RMLocationTableViewCellViewModel] = []
-  
+
   /// RMLocationViewModelDelegate weak reference
   public weak var delegate: RMLocationViewModelDelegate?
-  
+
   init() { }
-  
+
   /// Fetch locations function
   public func fetchLocation() {
     RMService.shared.execute(
@@ -55,8 +55,7 @@ final class RMLocationViewModel {
       }
     }
   }
-  
-  
+
   /// Get location at specific index
   /// - Parameter index: index of the desired location
   /// - Returns: Location if it exists in collection, `nil` otherwise
@@ -64,7 +63,7 @@ final class RMLocationViewModel {
     guard index < locations.count else {
       return nil
     }
-    
+
     return self.locations[index]
   }
 }

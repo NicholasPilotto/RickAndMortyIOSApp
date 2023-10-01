@@ -10,7 +10,7 @@ import Foundation
 final class RMSearchViewViewModel {
   private var optionMap: [RMSearchInputViewViewModel.DynamicOptions: String] = [:]
   private var searchText: String = ""
-  
+
   private var registerOptionChangeBlock: (((RMSearchInputViewViewModel.DynamicOptions, String)) -> Void)?
 
   private var searchResultHandler: ((RMSearchResultViewModel) -> Void)?
@@ -20,15 +20,15 @@ final class RMSearchViewViewModel {
 
   /// Search configuration property
   public let config: RMSearchConfig
-  
+
   // MARK: - Initializers
-  
+
   init(config: RMSearchConfig) {
     self.config = config
   }
-  
+
   // MARK: - Private methods
-  
+
   private func makeSearchApiCall<T: Codable>(_ type: T.Type, request: RMRequest) {
     // calling request
     RMService.shared.execute(request, expecting: type) { [weak self] result in
@@ -40,10 +40,10 @@ final class RMSearchViewViewModel {
       }
     }
   }
-  
+
   private func processSearcResults(model: Codable) {
     var resultsVM: RMSearchResultViewModel?
-    
+
     if let characterModels = model as? RMGetAllCharactersResponse {
       resultsVM = .characters(characterModels.results.compactMap {
         return RMCharacterCollectionViewCellViewModel(
@@ -61,7 +61,7 @@ final class RMSearchViewViewModel {
         return RMLocationTableViewCellViewModel(location: $0)
       })
     }
-    
+
     if let results = resultsVM {
       self.searchResultModel = model
       self.searchResultHandler?(results)
@@ -75,7 +75,7 @@ final class RMSearchViewViewModel {
   }
 
   // MARK: - Public methods
-  
+
   /// Set value in option map
   /// - Parameters:
   ///   - value: value to store into the map
@@ -85,7 +85,7 @@ final class RMSearchViewViewModel {
     let tuple = (option, value)
     self.registerOptionChangeBlock?(tuple)
   }
-  
+
   /// Block executed when option is changed
   /// - Parameter block: Callback
   public func registerOptionChangeBlock(
@@ -93,19 +93,19 @@ final class RMSearchViewViewModel {
   ) {
     self.registerOptionChangeBlock = block
   }
-  
+
   /// Set query text
   /// - Parameter text: Search query parameters
   public func set(query text: String) {
     self.searchText = text
   }
-  
+
   /// Search characters, episodes, locations
   public func executeSearch() {
     var queryParams: [URLQueryItem] = [
       URLQueryItem(name: "name", value: searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))
     ]
-    
+
     // appending query params
     queryParams.append(contentsOf: optionMap.enumerated().compactMap {
       let argument = $0.element.key.queryArgument
@@ -115,7 +115,7 @@ final class RMSearchViewViewModel {
 
     // creating request
     let request = RMRequest(endpoint: config.type.endpoint, queryParameters: queryParams)
-    
+
     switch config.type.endpoint {
       case .character:
         makeSearchApiCall(RMGetAllCharactersResponse.self, request: request)
@@ -125,14 +125,14 @@ final class RMSearchViewViewModel {
         makeSearchApiCall(RMGetAllLocationsResponse.self, request: request)
     }
   }
-  
+
   /// Register block. This block is called when the publisher gets the result from
   /// the API call.
   /// - Parameter block: Subscriber event handler block
   public func registerSearchResultHandler(_ block: @escaping (RMSearchResultViewModel) -> Void) {
     self.searchResultHandler = block
   }
-  
+
   /// Register block. This block is called when the publisher gets called from
   /// the API call when there are no results. It can happen when we are searching
   /// for something that does not exist or search went wrong.
@@ -140,7 +140,7 @@ final class RMSearchViewViewModel {
   public func registerNoSearchResultHandler(_ block: @escaping () -> Void) {
     self.noSearchResultHandler = block
   }
-  
+
   /// Get location at particular index if it exists, nil otherwise
   /// - Parameter index: Index of the desired location
   /// - Returns: Location found

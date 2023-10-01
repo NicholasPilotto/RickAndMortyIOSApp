@@ -9,17 +9,17 @@ import UIKit
 
 final class RMCharacterInfoCellViewModel {
   private let type: `Type`
-  
+
   /// Value of the current cell
   private let value: String
-  
+
   static let dateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSZ"
     formatter.timeZone = .current
     return formatter
   }()
-  
+
   static let shortDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.dateStyle = .medium
@@ -27,38 +27,38 @@ final class RMCharacterInfoCellViewModel {
     formatter.timeZone = .current
     return formatter
   }()
-  
+
   /// Title of the current cell
   public var title: String {
     self.type.displayTitle
   }
-  
+
   /// Computed property that manages the display value for the current cell
   public var displayValue: String {
     if value.isEmpty {
       return "None"
     }
-    
+
     if type == .created {
       guard let date = Self.dateFormatter.date(from: value) else {
         return "None"
       }
       return Self.shortDateFormatter.string(from: date)
     }
-    
+
     return value
   }
-  
+
   /// Computed property that manages the icon image for the current cell
   public var iconImage: UIImage? {
     return type.iconImage
   }
-  
+
   /// Computed property that manages the tint color for the current cell
   public var tintColor: UIColor {
     return type.tintColor
   }
-  
+
   enum `Type`: String {
     case status
     case gender
@@ -68,7 +68,7 @@ final class RMCharacterInfoCellViewModel {
     case created
     case location
     case episodeCount
-    
+
     var iconImage: UIImage? {
       switch self {
         case .status:
@@ -89,7 +89,7 @@ final class RMCharacterInfoCellViewModel {
           return UIImage(systemName: "bell")
       }
     }
-    
+
     var displayTitle: String {
       switch self {
         case .status:
@@ -110,7 +110,7 @@ final class RMCharacterInfoCellViewModel {
           return "EPISODE COUNT"
       }
     }
-    
+
     var tintColor: UIColor {
       switch self {
         case .status:
@@ -132,7 +132,7 @@ final class RMCharacterInfoCellViewModel {
       }
     }
   }
-  
+
   init(type: `Type`, value: String) {
     self.type = type
     self.value = value

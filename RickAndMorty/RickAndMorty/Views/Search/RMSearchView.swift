@@ -15,13 +15,13 @@ protocol RMSearchViewDelegate: AnyObject {
 
 class RMSearchView: UIView {
   private let viewModel: RMSearchViewViewModel
-  
+
   private let searchInputView = RMSearchInputView()
   private let noResultsView = RMNoSearchResultsView()
   private let resultsView = RMSearchResultsView()
 
   weak public var delegate: RMSearchViewDelegate?
-  
+
   init(frame: CGRect, viewModel: RMSearchViewViewModel) {
     self.viewModel = viewModel
 
@@ -34,19 +34,19 @@ class RMSearchView: UIView {
     addSubviews(resultsView, noResultsView, searchInputView)
 
     addConstraints()
-    
+
     searchInputView.configure(with: .init(type: viewModel.config.type))
     searchInputView.delegate = self
-    
+
     setUpHandlers(viewModel: viewModel)
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   // MARK: - Private methods
-  
+
   private func addConstraints() {
     NSLayoutConstraint.activate([
       // input view
@@ -54,7 +54,7 @@ class RMSearchView: UIView {
       searchInputView.leftAnchor.constraint(equalTo: leftAnchor),
       searchInputView.rightAnchor.constraint(equalTo: rightAnchor),
       searchInputView.heightAnchor.constraint(equalToConstant: viewModel.config.type == .episode ? 55 : 100),
-      
+
       // results view
       resultsView.topAnchor.constraint(equalTo: searchInputView.bottomAnchor),
       resultsView.leftAnchor.constraint(equalTo: leftAnchor),
@@ -91,7 +91,7 @@ class RMSearchView: UIView {
   }
 
   // MARK: - Public methods
-  
+
   public func presentKeyboard() {
     searchInputView.presentKeyboard()
   }
@@ -103,12 +103,12 @@ extension RMSearchView: UICollectionViewDelegate, UICollectionViewDataSource {
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     return 0
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
     return cell
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     collectionView.deselectItem(at: indexPath, animated: true)
   }
@@ -120,11 +120,11 @@ extension RMSearchView: RMSearchInputViewDelegate {
   func rmSearchInputView(_ inputView: RMSearchInputView, didSelectOption option: RMSearchInputViewViewModel.DynamicOptions) {
     delegate?.rmSearchView(self, didSelectOption: option)
   }
-  
+
   func rmSearchInputView(_ inputView: RMSearchInputView, didChangeSearchText text: String) {
     viewModel.set(query: text)
   }
-  
+
   func rmSearchInputViewDidTapSearchKeyboardButton(_ inputView: RMSearchInputView) {
     viewModel.executeSearch()
   }

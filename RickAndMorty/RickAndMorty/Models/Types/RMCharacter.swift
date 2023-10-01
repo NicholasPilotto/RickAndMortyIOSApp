@@ -20,11 +20,11 @@ struct RMCharacter: Codable, Hashable {
   let episode: [String]
   let url: String
   let created: String
-  
+
   public func hash(into hasher: inout Hasher) {
     hasher.combine(self)
   }
-  
+
   static func == (lhs: RMCharacter, rhs: RMCharacter) -> Bool {
     return lhs.hashValue == rhs.hashValue
   }

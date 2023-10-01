@@ -11,17 +11,17 @@ import Foundation
 final class RMAPICacheManager {
   private var cache = NSCache<NSString, NSData>()
   private var cacheDictionary: [RMEndpoint: NSCache<NSString, NSData>] = [:]
-  
+
   init() {
     setUpCache()
   }
-  
+
   private func setUpCache() {
     RMEndpoint.allCases.forEach {
       cacheDictionary[$0] = NSCache<NSString, NSData>()
     }
   }
-  
+
   /// Get object in cache
   /// - Parameters:
   ///   - endpoint: endpoint where cache is located
@@ -31,12 +31,11 @@ final class RMAPICacheManager {
     guard let targetCache = cacheDictionary[endpoint], let url = url else {
       return nil
     }
-    
+
     let key = url.absoluteString as NSString
     return targetCache.object(forKey: key) as? Data
   }
-  
-  
+
   /// Save object into the cache
   /// - Parameters:
   ///   - endpoint: endpoint where cache is located
@@ -46,7 +45,7 @@ final class RMAPICacheManager {
     guard let targetCache = cacheDictionary[endpoint], let url = url else {
       return
     }
-    
+
     let key = url.absoluteString as NSString
     targetCache.setObject(data as NSData, forKey: key)
   }

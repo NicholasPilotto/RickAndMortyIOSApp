@@ -17,7 +17,7 @@ struct RMSearchConfig {
     case character
     case episode
     case location
-    
+
     var title: String {
       switch self {
         case .character:
@@ -28,7 +28,7 @@ struct RMSearchConfig {
           return "Search Location"
       }
     }
-    
+
     var endpoint: RMEndpoint {
       switch self {
         case .character:
@@ -40,7 +40,7 @@ struct RMSearchConfig {
       }
     }
   }
-  
+
   let type: `Type`
 }
 
@@ -48,41 +48,41 @@ struct RMSearchConfig {
 class RMSearchViewController: UIViewController {
   private let searchView: RMSearchView
   private let viewModel: RMSearchViewViewModel
-  
+
   init(config: RMSearchConfig) {
     let viewModel = RMSearchViewViewModel(config: config)
     self.searchView = RMSearchView(frame: .zero, viewModel: viewModel)
     self.viewModel = viewModel
     super.init(nibName: nil, bundle: nil)
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     title = viewModel.config.type.title
     view.backgroundColor = .systemBackground
-    
+
     searchView.delegate = self
-    
+
     view.addSubviews(searchView)
-    
+
     addConstraints()
-    
+
     navigationItem.rightBarButtonItem = UIBarButtonItem(
       title: "Search",
       style: .done,
       target: self,
       action: #selector(didTapExecuteSearch))
   }
-  
+
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     searchView.presentKeyboard()
   }
-  
+
   private func addConstraints() {
     NSLayoutConstraint.activate([
       searchView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -91,7 +91,7 @@ class RMSearchViewController: UIViewController {
       searchView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
     ])
   }
-  
+
   @objc private func didTapExecuteSearch() {
     viewModel.executeSearch()
   }
@@ -104,10 +104,10 @@ extension RMSearchViewController: RMSearchViewDelegate {
         self?.viewModel.set(value: selection, for: option)
       }
     }
-    
+
     viewController.sheetPresentationController?.detents = [.medium()]
     viewController.sheetPresentationController?.prefersGrabberVisible = true
-    
+
     present(viewController, animated: true)
   }
 

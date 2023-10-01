@@ -10,20 +10,20 @@ import UIKit
 /// Controller to show info about a single character
 final class RMCharacterDetailViewController: UIViewController {
   private let viewModel: RMCharacterDetailViewViewModel
-  
+
   private let detailView: RMCharacterDetailView
-  
+
   init(viewModel: RMCharacterDetailViewViewModel) {
     self.viewModel = viewModel
     self.detailView = RMCharacterDetailView(frame: .zero, viewModel: viewModel)
-    
+
     super.init(nibName: nil, bundle: nil)
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
+
   override func viewDidLoad() {
     super.viewDidLoad()
     view.backgroundColor = .systemBackground
@@ -34,11 +34,11 @@ final class RMCharacterDetailViewController: UIViewController {
       target: self,
       action: #selector(didTapShared))
     addConstraints()
-    
+
     detailView.collectionView?.delegate = self
     detailView.collectionView?.dataSource = self
   }
-  
+
   private func addConstraints() {
     NSLayoutConstraint.activate([
       detailView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -47,7 +47,7 @@ final class RMCharacterDetailViewController: UIViewController {
       detailView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
     ])
   }
-  
+
   @objc private func didTapShared() {}
 }
 
@@ -57,10 +57,10 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
   func numberOfSections(in collectionView: UICollectionView) -> Int {
     return viewModel.sections.count
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
     let sectionType = viewModel.sections[section]
-    
+
     switch sectionType {
       case .photo:
         return 1
@@ -70,10 +70,10 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
         return viewModels.count
     }
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
     let sectionType = viewModel.sections[indexPath.section]
-    
+
     switch sectionType {
       case .photo(let viewModel):
         guard let cell = collectionView.dequeueReusableCell(
@@ -104,10 +104,10 @@ extension RMCharacterDetailViewController: UICollectionViewDelegate, UICollectio
         return cell
     }
   }
-  
+
   func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
     let sectionType = viewModel.sections[indexPath.section]
-    
+
     switch sectionType {
       case .photo, .information:
         break

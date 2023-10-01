@@ -12,18 +12,18 @@ final class RMCharacterCollectionViewCellViewModel: Hashable, Equatable {
   public let characterName: String
   private let characterStauts: RMCharacterStatus
   private let characterImageUrl: URL?
-  
+
   /// Represents the status of the current character
   public var characterStatusText: String {
     return "Status: \(characterStauts.rawValue.capitalized)"
   }
-  
+
   init(characterName: String, characterStauts: RMCharacterStatus, characterImageUrl: URL?) {
     self.characterName = characterName
     self.characterStauts = characterStauts
     self.characterImageUrl = characterImageUrl
   }
-  
+
   static func == (lhs: RMCharacterCollectionViewCellViewModel, rhs: RMCharacterCollectionViewCellViewModel) -> Bool {
     return lhs.hashValue == rhs.hashValue
   }
@@ -33,7 +33,7 @@ final class RMCharacterCollectionViewCellViewModel: Hashable, Equatable {
     hasher.combine(characterStauts)
     hasher.combine(characterImageUrl)
   }
-  
+
   /// Get the image of the current character
   /// - Parameter completion: completion handler of the request
   public func fetchImage(completion: @escaping (Result<Data, Error>) -> Void) {
@@ -41,7 +41,7 @@ final class RMCharacterCollectionViewCellViewModel: Hashable, Equatable {
       completion(.failure(URLError(.badURL)))
       return
     }
-    
+
     RMImageLoader.shared.downloadImage(url, completion: completion)
   }
 }

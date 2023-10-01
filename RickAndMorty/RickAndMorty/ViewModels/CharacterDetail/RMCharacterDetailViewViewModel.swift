@@ -10,31 +10,31 @@ import UIKit
 /// Episode detail view controller class
 final class RMCharacterDetailViewViewModel {
   private let character: RMCharacter
-  
+
   /// Represents all episode urls where this character is present
   public var episodes: [String] {
     self.character.episode
   }
-  
+
   enum SectionType {
     case photo(viewModel: RMCharacterPhotoCellViewModel)
     case information(viewModels: [RMCharacterInfoCellViewModel])
     case episodes(viewModels: [RMCharacterEpisodeCellViewModel])
   }
-  
+
   /// Type of the section
   public var sections: [SectionType] = []
-  
+
   /// Computed property to get the title of the view
   public var title: String {
     character.name.uppercased()
   }
-  
+
   init(character: RMCharacter) {
     self.character = character
     setUpSections()
   }
-  
+
   private func setUpSections() {
     sections = [
       .photo(viewModel: .init(imageUrl: URL(string: character.image))),
@@ -53,9 +53,9 @@ final class RMCharacterDetailViewViewModel {
       })
     ]
   }
-  
+
   // MARK: layout
-  
+
   /// Create collection view layout section for character photo cell
   /// - Returns: NSCollectionLayoutSection for character photo
   public func createPhotoSectionLayout() -> NSCollectionLayoutSection {
@@ -64,7 +64,7 @@ final class RMCharacterDetailViewViewModel {
       heightDimension: .fractionalHeight(1.0))
     )
     item.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 0, bottom: 10, trailing: 0)
-    
+
     let group = NSCollectionLayoutGroup.vertical(
       layoutSize: NSCollectionLayoutSize(
         widthDimension: .fractionalWidth(1.0),
@@ -72,13 +72,12 @@ final class RMCharacterDetailViewViewModel {
       ),
       subitems: [item]
     )
-    
+
     let section = NSCollectionLayoutSection(group: group)
-    
+
     return section
   }
-  
-  
+
   /// Create collection view layout section for character information cell
   /// - Returns: NSCollectionLayoutSection for character information
   public func createInformationSectionLayout() -> NSCollectionLayoutSection {
@@ -87,7 +86,7 @@ final class RMCharacterDetailViewViewModel {
       heightDimension: .fractionalHeight(1.0))
     )
     item.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
-    
+
     let group = NSCollectionLayoutGroup.horizontal(
       layoutSize: NSCollectionLayoutSize(
         widthDimension: .fractionalWidth(1.0),
@@ -95,13 +94,12 @@ final class RMCharacterDetailViewViewModel {
       ),
       subitems: [item, item]
     )
-    
+
     let section = NSCollectionLayoutSection(group: group)
-    
+
     return section
   }
-  
-  
+
   /// Create collection view layout section for character episodes cell
   /// - Returns: NSCollectionViewSection for character episodes
   public func createEpisodesSectionLayout() -> NSCollectionLayoutSection {
@@ -110,7 +108,7 @@ final class RMCharacterDetailViewViewModel {
       heightDimension: .fractionalHeight(1.0))
     )
     item.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 5, bottom: 10, trailing: 8)
-    
+
     let group = NSCollectionLayoutGroup.horizontal(
       layoutSize: NSCollectionLayoutSize(
         widthDimension: .fractionalWidth(0.8),
@@ -118,10 +116,10 @@ final class RMCharacterDetailViewViewModel {
       ),
       subitems: [item]
     )
-    
+
     let section = NSCollectionLayoutSection(group: group)
     section.orthogonalScrollingBehavior = .groupPaging
-    
+
     return section
   }
 }
