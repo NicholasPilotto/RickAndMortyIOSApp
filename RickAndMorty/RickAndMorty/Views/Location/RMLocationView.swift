@@ -12,6 +12,7 @@ protocol RMLocationViewDelegate: AnyObject {
 }
 
 class RMLocationView: UIView {
+  // MARK: - Private viariables
   private var viewModel: RMLocationViewModel? {
     didSet {
       spinner.stopAnimating()
@@ -29,7 +30,10 @@ class RMLocationView: UIView {
     table.alpha = 0
     table.isHidden = true
     table.translatesAutoresizingMaskIntoConstraints = false
-    table.register(RMLocationTableViewCell.self, forCellReuseIdentifier: RMLocationTableViewCell.cellIdentifier)
+    table.register(
+      RMLocationTableViewCell.self,
+      forCellReuseIdentifier: RMLocationTableViewCell.cellIdentifier
+    )
     return table
   }()
 
@@ -40,7 +44,11 @@ class RMLocationView: UIView {
     return spinner
   }()
 
+  // MARK: - Public variables
+
   public weak var delegate: RMLocationViewDelegate?
+
+  // MARK: - Initializers
 
   override init(frame: CGRect) {
     super.init(frame: frame)
@@ -58,6 +66,8 @@ class RMLocationView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
 
+  // MARK: - Private methods
+
   private func addConstraints() {
     NSLayoutConstraint.activate([
       spinner.heightAnchor.constraint(equalToConstant: 100),
@@ -72,15 +82,24 @@ class RMLocationView: UIView {
     ])
   }
 
-  public func configure(with viewModel: RMLocationViewModel) {
-    self.viewModel = viewModel
-  }
-
   private func configureTable() {
     tableView.dataSource = self
     tableView.delegate = self
   }
+
+  private func showLoadingIndicator() {
+    let footer = RMTableLoadingFooterView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 100))
+    tableView.tableFooterView = footer
+  }
+
+  // MARK: Public methods
+
+  public func configure(with viewModel: RMLocationViewModel) {
+    self.viewModel = viewModel
+  }
 }
+
+// MARK: - UITableView delegate
 
 extension RMLocationView: UITableViewDelegate {
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -93,6 +112,8 @@ extension RMLocationView: UITableViewDelegate {
     delegate?.rmLocationView(self, didSelect: locationModel)
   }
 }
+
+// MARK: - UITable view dataSource
 
 extension RMLocationView: UITableViewDataSource {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -111,5 +132,37 @@ extension RMLocationView: UITableViewDataSource {
     }
     cell.configure(with: cellViewModels[indexPath.row])
     return cell
+  }
+}
+
+// MARK: - UIScrollView delegate
+
+extension RMLocationView: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    guard let viewModel = viewModel,
+      !viewModel.cellViewModels.isEmpty,
+      viewModel.shouldShowLoadMoreIndicator else {
+      return
+    }
+
+    Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] timer in
+      let offset = scrollView.contentOffset.y
+      let totalContentHeight = scrollView.contentSize.height
+      let totalScrollViewFixedHeight = scrollView.frame.size.height
+
+      if offset >= (totalContentHeight - totalScrollViewFixedHeight - 120) {
+        DispatchQueue.main.async {
+          self?.showLoadingIndicator()
+        }
+
+        viewModel.fetchAdditionalLocations()
+  
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+          self?.tableView.reloadData()
+        }
+      }
+
+      timer.invalidate()
+    }
   }
 }
