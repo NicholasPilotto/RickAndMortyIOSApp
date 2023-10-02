@@ -32,7 +32,9 @@ final class RMLocationViewController: UIViewController, RMLocationViewModelDeleg
 
   private func addSearchButton() {
     navigationItem.rightBarButtonItem = UIBarButtonItem(
-      barButtonSystemItem: .search, target: self, action: #selector(didTapSearch)
+      barButtonSystemItem: .search,
+      target: self,
+      action: #selector(didTapSearch)
     )
   }
 
