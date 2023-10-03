@@ -22,6 +22,13 @@ class RMLocationView: UIView {
       UIView.animate(withDuration: 0.3) {
         self.tableView.alpha = 1
       }
+
+      viewModel?.registerDidFinishPaginationBlock { [weak self] in
+        DispatchQueue.main.async {
+          self?.tableView.tableFooterView = nil
+          self?.tableView.reloadData()
+        }
+      }
     }
   }
 
@@ -70,11 +77,13 @@ class RMLocationView: UIView {
 
   private func addConstraints() {
     NSLayoutConstraint.activate([
+      // spinner constraints
       spinner.heightAnchor.constraint(equalToConstant: 100),
       spinner.widthAnchor.constraint(equalToConstant: 100),
       spinner.centerXAnchor.constraint(equalTo: centerXAnchor),
       spinner.centerYAnchor.constraint(equalTo: centerYAnchor),
 
+      // table view constraints
       tableView.topAnchor.constraint(equalTo: topAnchor),
       tableView.leftAnchor.constraint(equalTo: leftAnchor),
       tableView.rightAnchor.constraint(equalTo: rightAnchor),
@@ -156,10 +165,6 @@ extension RMLocationView: UIScrollViewDelegate {
         }
 
         viewModel.fetchAdditionalLocations()
-  
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-          self?.tableView.reloadData()
-        }
       }
 
       timer.invalidate()

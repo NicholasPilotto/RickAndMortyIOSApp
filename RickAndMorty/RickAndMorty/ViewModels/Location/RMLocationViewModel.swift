@@ -32,6 +32,9 @@ final class RMLocationViewModel {
 
   private var apiInfo: RMGetAllLocationsResponse.Info?
 
+  /// Block of code execute when pagination is finished.
+  public var didFinishPagination: (() -> Void)?
+
   // MARK: - Public variables
 
   /// Array of cell view models
@@ -47,6 +50,7 @@ final class RMLocationViewModel {
 
   /// Check if we are currently downloading more locations
   public var isLoadingMoreLocations = false
+
 
   // MARK: - Initializers
 
@@ -84,6 +88,13 @@ final class RMLocationViewModel {
     return self.locations[index]
   }
 
+
+  /// Register for didFinishPaginationBlock.
+  /// - Parameter block: Block to execute when pagination is finished.
+  public func registerDidFinishPaginationBlock(_ block: @escaping (() -> Void)) {
+    self.didFinishPagination = block
+  }
+
   /// Paginate if additional episodes are needed
   public func fetchAdditionalLocations() {
     guard !isLoadingMoreLocations else {
@@ -116,6 +127,7 @@ final class RMLocationViewModel {
 
             DispatchQueue.main.async {
               self?.isLoadingMoreLocations = false
+              self?.didFinishPagination?()
             }
           case .failure(let failure):
             print(failure)
