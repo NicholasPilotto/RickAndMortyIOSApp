@@ -102,6 +102,10 @@ final class RMSearchViewViewModel {
 
   /// Search characters, episodes, locations
   public func executeSearch() {
+    guard !searchText.trimmingCharacters(in: .whitespaces).isEmpty else {
+      return
+    }
+
     var queryParams: [URLQueryItem] = [
       URLQueryItem(name: "name", value: searchText.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed))
     ]
