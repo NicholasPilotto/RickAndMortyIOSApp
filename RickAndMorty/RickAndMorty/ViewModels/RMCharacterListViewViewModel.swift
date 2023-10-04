@@ -123,14 +123,22 @@ extension RMCharacterListViewViewModel:
     return cell
   }
 
-  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    sizeForItemAt indexPath: IndexPath
+  ) -> CGSize {
     let bounds = UIScreen.main.bounds
     let isIphone = UIDevice.current.userInterfaceIdiom == .phone
     let width: CGFloat = isIphone ? (bounds.width - 30) / 2 : (bounds.width - 50) / 4
     return CGSize(width: width, height: width * 1.5)
   }
 
-  func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+  func collectionView(
+    _ collectionView: UICollectionView,
+    viewForSupplementaryElementOfKind kind: String,
+    at indexPath: IndexPath
+  ) -> UICollectionReusableView {
     guard kind == UICollectionView.elementKindSectionFooter else {
       fatalError("Unsupported reusable view")
     }
@@ -148,7 +156,11 @@ extension RMCharacterListViewViewModel:
     return footer
   }
 
-  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+  func collectionView(
+    _ collectionView: UICollectionView,
+    layout collectionViewLayout: UICollectionViewLayout,
+    referenceSizeForFooterInSection section: Int
+  ) -> CGSize {
     guard shouldShowLoadMoreIndicator else {
       return .zero
     }
