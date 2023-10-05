@@ -50,7 +50,9 @@ final class RMSearchResultsView: UIView {
     return collection
   }()
 
+  /// TableView viewmodels
   private var locationCellViewModels: [RMLocationTableViewCellViewModel] = []
+  /// CollectionView viewmodels
   private var collectionViewCellViewModels: [any Hashable] = []
 
   public weak var delegate: RMSearchResultsDelegate?
@@ -95,7 +97,7 @@ final class RMSearchResultsView: UIView {
       return
     }
 
-    switch viewModel {
+    switch viewModel.results {
       case .characters(let viewModels):
         self.collectionViewCellViewModels = viewModels
         setUpCollectionView()
@@ -123,6 +125,42 @@ final class RMSearchResultsView: UIView {
     self.locationCellViewModels = viewModels
     tableView.reloadData()
   }
+
+  private func showLoadingIndicator() {
+    let footer = RMTableLoadingFooterView(frame: CGRect(x: 0, y: 0, width: frame.size.width, height: 100))
+    tableView.tableFooterView = footer
+  }
+
+  private func handleLocationPagination(scrollView: UIScrollView) {
+    guard let viewModel = viewModel,
+      !locationCellViewModels.isEmpty,
+      viewModel.shouldShowLoadMoreIndicator,
+      !viewModel.isLoadingMoreResults else {
+      return
+    }
+
+    Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false) { [weak self] timer in
+      let offset = scrollView.contentOffset.y
+      let totalContentHeight = scrollView.contentSize.height
+      let totalScrollViewFixedHeight = scrollView.frame.size.height
+
+      if offset >= (totalContentHeight - totalScrollViewFixedHeight - 120) {
+        DispatchQueue.main.async {
+          self?.showLoadingIndicator()
+        }
+
+        viewModel.fetchAdditionalResults { [weak self] newResults in
+          self?.tableView.tableFooterView = nil
+          self?.locationCellViewModels = newResults
+          self?.tableView.reloadData()
+        }
+      }
+
+      timer.invalidate()
+    }
+  }
+
+  private func handleCharacterPagination(scrollView: UIScrollView) { }
 
   // MARK: - Public methods
 
@@ -221,5 +259,17 @@ extension RMSearchResultsView: UICollectionViewDelegate,
       width: width,
       height: 100
     )
+  }
+}
+
+// MARK: - UIScrollView delegate
+
+extension RMSearchResultsView: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    if !locationCellViewModels.isEmpty {
+      handleLocationPagination(scrollView: scrollView)
+    } else {
+      handleCharacterPagination(scrollView: scrollView)
+    }
   }
 }
