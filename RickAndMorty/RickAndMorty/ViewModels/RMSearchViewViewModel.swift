@@ -42,7 +42,8 @@ final class RMSearchViewViewModel {
   }
 
   private func processSearcResults(model: Codable) {
-    var resultsVM: RMSearchResultViewModel?
+    var resultsVM: RMSearchResultType?
+    var nextUrl: String?
 
     if let characterModels = model as? RMGetAllCharactersResponse {
       resultsVM = .characters(characterModels.results.compactMap {
@@ -52,19 +53,26 @@ final class RMSearchViewViewModel {
           characterImageUrl: URL(string: $0.image)
         )
       })
+
+      nextUrl = characterModels.info.next
     } else if let episodeModels = model as? RMGetAllEpisodesResponse {
       resultsVM = .episodes(episodeModels.results.compactMap {
         return RMCharacterEpisodeCellViewModel(episodeDataUrl: URL(string: $0.url))
       })
+
+      nextUrl = episodeModels.info.next
     } else if let locationModels = model as? RMGetAllLocationsResponse {
       resultsVM = .locations(locationModels.results.compactMap {
         return RMLocationTableViewCellViewModel(location: $0)
       })
+
+      nextUrl = locationModels.info.next
     }
 
     if let results = resultsVM {
       self.searchResultModel = model
-      self.searchResultHandler?(results)
+      let resultViewModel = RMSearchResultViewModel(results: results, next: nextUrl)
+      self.searchResultHandler?(resultViewModel)
     } else {
       self.handleNoResults()
     }
