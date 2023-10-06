@@ -160,7 +160,7 @@ final class RMSearchResultsView: UIView {
     }
   }
 
-  private func handleCharacterPagination(scrollView: UIScrollView) {
+  private func handleCharactersAndEpisodesPagination(scrollView: UIScrollView) {
     guard let viewModel = viewModel,
       !collectionViewCellViewModels.isEmpty,
       viewModel.shouldShowLoadMoreIndicator,
@@ -175,10 +175,20 @@ final class RMSearchResultsView: UIView {
 
       if offset >= (totalContentHeight - totalScrollViewFixedHeight - 120) {
         viewModel.fetchAdditionalResults { [weak self] newResults in
-          self?.tableView.tableFooterView = nil
-          self?.collectionViewCellViewModels = newResults
+          DispatchQueue.main.async {
+            self?.tableView.tableFooterView = nil
 
-          print(newResults.count)
+            let originalCount = self?.collectionViewCellViewModels.count ?? 0
+            let newCount = newResults.count - originalCount
+            let total = originalCount + newCount
+            let startingIndex = total - newCount
+            let indexPathsToAdd: [IndexPath] = Array(startingIndex ..< (startingIndex + newCount)).compactMap {
+              return IndexPath(row: $0, section: 0)
+            }
+
+            self?.collectionViewCellViewModels = newResults
+            self?.collectionView.insertItems(at: indexPathsToAdd)
+          }
         }
       }
 
@@ -330,7 +340,7 @@ extension RMSearchResultsView: UIScrollViewDelegate {
     if !locationCellViewModels.isEmpty {
       handleLocationPagination(scrollView: scrollView)
     } else {
-      handleCharacterPagination(scrollView: scrollView)
+      handleCharactersAndEpisodesPagination(scrollView: scrollView)
     }
   }
 }
