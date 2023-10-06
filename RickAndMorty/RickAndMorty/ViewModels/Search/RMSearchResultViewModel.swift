@@ -116,7 +116,7 @@ class RMSearchResultViewModel {
               self?.results = .characters(newResults)
               DispatchQueue.main.async {
                 self?.isLoadingMoreResults = false
-                completion(additionalResults) // Notify UI to refresh via callback
+                completion(newResults) // Notify UI to refresh via callback
               }
             case .failure(let failure):
               print(failure)
@@ -138,7 +138,7 @@ class RMSearchResultViewModel {
               self?.results = .episodes(newResults)
               DispatchQueue.main.async {
                 self?.isLoadingMoreResults = false
-                completion(additionalResults) // Notify UI to refresh via callback
+                completion(newResults) // Notify UI to refresh via callback
               }
             case .failure(let failure):
               print(failure)
