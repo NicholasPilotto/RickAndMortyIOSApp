@@ -28,8 +28,8 @@ class RMSearchResultViewModel {
   }
 
 
-  /// Fetch more search results from pagination link.
-  public func fetchAdditionalResults(completion: @escaping ([RMLocationTableViewCellViewModel]) -> Void) {
+  /// Fetch more search locations from pagination link.
+  public func fetchAdditionalLocations(completion: @escaping ([RMLocationTableViewCellViewModel]) -> Void) {
     guard !isLoadingMoreResults else {
       return
     }
@@ -84,6 +84,68 @@ class RMSearchResultViewModel {
             print(failure)
             self?.isLoadingMoreResults = false
         }
+    }
+  }
+
+  /// Fetch more search results from pagination link.
+  public func fetchAdditionalResults(completion: @escaping ([any Hashable]) -> Void) {
+    guard !isLoadingMoreResults else { return }
+    guard let nextUrlString = next, let url = URL(string: nextUrlString) else { return }
+    isLoadingMoreResults = true
+    guard let rmRequest = RMRequest(url: url) else {
+      isLoadingMoreResults = false
+      return
+    }
+    switch results {
+      case .characters(let existingResults):
+        RMService.shared.execute(rmRequest, expecting: RMGetAllCharactersResponse.self) { [weak self] result in
+          switch result {
+            case .success(let responseModel):
+              let moreResults = responseModel.results
+              let info = responseModel.info
+              self?.next = info.next
+              let additionalResults = moreResults.compactMap {
+                return RMCharacterCollectionViewCellViewModel(
+                  characterName: $0.name,
+                  characterStauts: $0.status,
+                  characterImageUrl: URL(string: $0.image)
+                )
+              }
+              var newResults: [RMCharacterCollectionViewCellViewModel] = []
+              newResults = existingResults + additionalResults
+              self?.results = .characters(newResults)
+              DispatchQueue.main.async {
+                self?.isLoadingMoreResults = false
+                completion(additionalResults) // Notify UI to refresh via callback
+              }
+            case .failure(let failure):
+              print(failure)
+              self?.isLoadingMoreResults = false
+          }
+        }
+      case .episodes(let existingResults):
+        RMService.shared.execute(rmRequest, expecting: RMGetAllEpisodesResponse.self) { [weak self] result in
+          switch result {
+            case .success(let responseModel):
+              let moreResults = responseModel.results
+              let info = responseModel.info
+              self?.next = info.next
+              let additionalResults = moreResults.compactMap {
+                return RMCharacterEpisodeCellViewModel(episodeDataUrl: URL(string: $0.url))
+              }
+              var newResults: [RMCharacterEpisodeCellViewModel] = []
+              newResults = existingResults + additionalResults
+              self?.results = .episodes(newResults)
+              DispatchQueue.main.async {
+                self?.isLoadingMoreResults = false
+                completion(additionalResults) // Notify UI to refresh via callback
+              }
+            case .failure(let failure):
+              print(failure)
+              self?.isLoadingMoreResults = false
+          }
+        }
+      case .locations: break
     }
   }
 }
