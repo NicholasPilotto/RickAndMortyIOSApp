@@ -129,8 +129,7 @@ extension RMCharacterListViewViewModel:
     sizeForItemAt indexPath: IndexPath
   ) -> CGSize {
     let bounds = UIScreen.main.bounds
-    let isIphone = UIDevice.current.userInterfaceIdiom == .phone
-    let width: CGFloat = isIphone ? (bounds.width - 30) / 2 : (bounds.width - 50) / 4
+    let width: CGFloat = UIDevice.isIphone ? (bounds.width - 30) / 2 : (bounds.width - 50) / 4
     return CGSize(width: width, height: width * 1.5)
   }
 
