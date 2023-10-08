@@ -163,4 +163,26 @@ final class RMSearchViewViewModel {
 
     return searchModel.results[index]
   }
+
+  /// Get character at particular index if it exists, nil otherwise
+  /// - Parameter index: Index of the desired character
+  /// - Returns: Character found
+  public func characterSearchResult(at index: Int) -> RMCharacter? {
+    guard let searchModel = searchResultModel as? RMGetAllCharactersResponse else {
+      return nil
+    }
+
+    return searchModel.results[index]
+  }
+
+  /// Get episode at particular index if it exists, nil otherwise
+  /// - Parameter index: Index of the desired episode
+  /// - Returns: Episode found
+  public func episodeSearchResult(at index: Int) -> RMEpisode? {
+    guard let searchModel = searchResultModel as? RMGetAllEpisodesResponse else {
+      return nil
+    }
+
+    return searchModel.results[index]
+  }
 }
