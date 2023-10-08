@@ -32,7 +32,7 @@ final class RMSearchResultsView: UIView {
   private let collectionView: UICollectionView = {
     let layout = UICollectionViewFlowLayout()
     layout.scrollDirection = .vertical
-    layout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 10, right: 10)
+    layout.sectionInset = UIEdgeInsets(top: 20, left: 10, bottom: 10, right: 10)
     let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
     collection.isHidden = true
     collection.translatesAutoresizingMaskIntoConstraints = false
@@ -275,9 +275,9 @@ extension RMSearchResultsView: UICollectionViewDelegate,
     }
 
     switch viewModel.results {
-      case .characters(let viewModels):
+      case .characters:
         delegate?.rmSearchResultsView(self, didTapCharacterAt: indexPath.row)
-      case .episodes(let viewModels):
+      case .episodes:
         delegate?.rmSearchResultsView(self, didTapEpisodeAt: indexPath.row)
       case .locations:
         break
