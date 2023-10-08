@@ -116,4 +116,16 @@ extension RMSearchViewController: RMSearchViewDelegate {
     viewController.navigationItem.largeTitleDisplayMode = .never
     navigationController?.pushViewController(viewController, animated: true)
   }
+
+  func rmSearchResultsView(_ resultsView: RMSearchView, didSelectCharacter character: RMCharacter) {
+    let viewController = RMCharacterDetailViewController(viewModel: .init(character: character))
+    viewController.navigationItem.largeTitleDisplayMode = .never
+    navigationController?.pushViewController(viewController, animated: true)
+  }
+
+  func rmSearchResultsView(_ resultsView: RMSearchView, didSelectEpisode episode: RMEpisode) {
+    let viewController = RMEpisodeDetailViewController(url: URL(string: episode.url))
+    viewController.navigationItem.largeTitleDisplayMode = .never
+    navigationController?.pushViewController(viewController, animated: true)
+  }
 }
